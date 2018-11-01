@@ -1,5 +1,5 @@
 import 'package:dev_epicture_2018/data/imgur.dart';
-import 'package:dev_epicture_2018/ui/imgur/card.dart';
+import 'package:dev_epicture_2018/ui/gallery/gallery.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -10,39 +10,22 @@ class Search extends StatefulWidget {
 }
 
 class _SearchState extends State<Search> {
-  List<Imgur> _imgurs = [];
   String _searchText;
-  int _currentPage = 0;
+  final GlobalKey<GalleryState> _key = GlobalKey<GalleryState>();
 
   void search(String text) {
     setState(() {
       this._searchText = text;
     });
-    _loadImgur(page: 0);
+    _key.currentState.refresh();
   }
 
-  Future<void> _loadImgur({int page = 0}) async {
+  getData({int page = 0}) async {
     http.Response response;
     SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    response = await http.get(
-        'https://api.imgur.com/3/gallery/search/hot?client_id=4525911e004914a&album_previews=true&mature=true&q=' + this._searchText + '/' + page.toString(),
+    response = await http.get('https://api.imgur.com/3/gallery/search/hot/' + page.toString() + '?client_id=4525911e004914a&album_previews=true&mature=true&q=' + this._searchText,
         headers: prefs.getString('access_token') != null ? {'Authorization': 'Bearer ' + prefs.getString('access_token')} : {});
-    setState(() {
-      if (_imgurs.isEmpty)
-        _imgurs = Imgur.allFromResponse(response.body);
-      else {
-        _imgurs = List.from(_imgurs)..addAll(Imgur.allFromResponse(response.body));
-      }
-    });
-  }
-
-  Widget _buildGalleryTile(BuildContext context, int index) {
-    var imgur = _imgurs[index];
-
-    return ImgurCard(
-      imgur: imgur,
-    );
+    return Imgur.allFromResponse(response.body);
   }
 
   @override
@@ -57,14 +40,10 @@ class _SearchState extends State<Search> {
           color: Colors.white,
         ),
       );
-    } else if (_imgurs.isEmpty) {
-      content = Center(
-        child: CircularProgressIndicator(),
-      );
     } else {
-      content = ListView.builder(
-        itemCount: _imgurs.length,
-        itemBuilder: _buildGalleryTile,
+      content = Gallery(
+        key: _key,
+        dataCallback: (page) => getData(page: page),
       );
     }
 
@@ -78,9 +57,7 @@ class _SearchState extends State<Search> {
             fillColor: Colors.white,
           ),
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20.0),
-          onSubmitted: (text) {
-            search(text);
-          },
+          onSubmitted: (text) => search(text),
         ),
       ),
       body: content,

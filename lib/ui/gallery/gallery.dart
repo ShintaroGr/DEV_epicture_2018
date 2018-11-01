@@ -3,32 +3,46 @@ import 'dart:async';
 import 'package:dev_epicture_2018/data/imgur.dart';
 import 'package:dev_epicture_2018/ui/imgur/card.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 class Gallery extends StatefulWidget {
-  final String tag;
-  final String sort;
+  final dataCallback;
 
-  Gallery({this.tag = '', this.sort = 'hot'});
+  Gallery({@required this.dataCallback, Key key}): super(key:key);
 
   @override
-  _GalleryState createState() => _GalleryState(tag: this.tag, sort: this.sort);
+  GalleryState createState() => GalleryState(dataCallback: this.dataCallback);
 }
 
-class _GalleryState extends State<Gallery> {
+class GalleryState extends State<Gallery> {
   List<Imgur> _imgurs = [];
   int _currentPage;
   ScrollController _scrollController;
   GlobalKey<RefreshIndicatorState> _refreshIndicatorKey;
-  final String tag;
-  final String sort;
+  final dataCallback;
 
-  _GalleryState({this.tag = '', this.sort = 'hot'});
+  GalleryState({@required this.dataCallback});
+
+  refresh() {
+    print('ALED');
+    setState(() {
+      this._imgurs = [];
+
+      this.dataCallback(this._currentPage).then((res) {
+        if (!this.mounted) {
+          return;
+        }
+        setState(() {
+          this._currentPage = 0;
+          this._imgurs = res;
+        });
+      });
+    });
+  }
 
   @override
   void initState() {
-    _loadImgur();
+    super.initState();
+    _loadImgur(page: 0);
     _currentPage = 0;
     _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
     _scrollController = ScrollController();
@@ -41,7 +55,6 @@ class _GalleryState extends State<Gallery> {
         _loadImgur(page: _currentPage);
       }
     });
-    super.initState();
   }
 
   @override
@@ -51,30 +64,14 @@ class _GalleryState extends State<Gallery> {
   }
 
   Future<void> _loadImgur({int page = 0}) async {
-    http.Response response;
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (this.tag.isNotEmpty) {
-      response = await http.get(
-          'https://api.imgur.com/3/gallery/t/' + this.tag + '/' + this.sort + '/' + page.toString() + '?client_id=4525911e004914a&album_previews=true&mature=true',
-          headers: prefs.getString('access_token') != null ? {'Authorization': 'Bearer ' + prefs.getString('access_token')} : {});
-      setState(() {
-        if (_imgurs.isEmpty)
-          _imgurs = Imgur.allFromResponseTag(response.body);
-        else {
-          _imgurs = List.from(_imgurs)..addAll(Imgur.allFromResponse(response.body));
-        }
-      });
-    } else {
-      response = await http.get('https://api.imgur.com/3/gallery/' + this.sort + '/' + page.toString() + '?client_id=4525911e004914a&album_previews=true&mature=true',
-          headers: prefs.getString('access_token') != null ? {'Authorization': 'Bearer ' + prefs.getString('access_token')} : {});
-      setState(() {
-        if (_imgurs.isEmpty)
-          _imgurs = Imgur.allFromResponse(response.body);
-        else {
-          _imgurs = List.from(_imgurs)..addAll(Imgur.allFromResponse(response.body));
-        }
-      });
-    }
+    List<Imgur> response = await dataCallback(page);
+    setState(() {
+      if (_imgurs.isEmpty)
+        _imgurs = response;
+      else {
+        _imgurs = List.from(_imgurs)..addAll(response);
+      }
+    });
   }
 
   Widget _buildGalleryTile(BuildContext context, int index) {

@@ -74,7 +74,13 @@ class _ImgurCardState extends State<ImgurCard> {
     else
       await http.post('https://api.imgur.com/3/image/' + imgur.id + '/favorite', headers: {'Authorization': 'Bearer ' + prefs.getString('access_token')});
     setState(() {
-      imgur.favoriteCount += 1;
+      if (imgur.favoriteCount != null) {
+        if (imgur.favorite)
+          imgur.favoriteCount -= 1;
+        else
+          imgur.favoriteCount += 1;
+      }
+      imgur.favorite = !imgur.favorite;
     });
   }
 
@@ -113,8 +119,8 @@ class _ImgurCardState extends State<ImgurCard> {
                             await voteUp(imgur);
                           },
                           icon: Icon(
-                            Icons.thumb_up,
-                            color: Colors.white,
+                            Icons.arrow_upward,
+                            color: imgur.vote == "up" ? Colors.white : Colors.grey,
                           ),
                         ),
                         Text(
@@ -126,8 +132,8 @@ class _ImgurCardState extends State<ImgurCard> {
                             await voteDown(imgur);
                           },
                           icon: Icon(
-                            Icons.thumb_down,
-                            color: Colors.white,
+                            Icons.arrow_downward,
+                            color: imgur.vote == "down" ? Colors.white : Colors.grey,
                           ),
                         ),
                       ],
@@ -136,12 +142,17 @@ class _ImgurCardState extends State<ImgurCard> {
                       onPressed: () async {
                         await fav(imgur);
                       },
-                      icon: Icon(
-                        Icons.favorite_border,
-                        color: Colors.white,
-                      ),
+                      icon: imgur.favorite
+                          ? Icon(
+                              Icons.favorite,
+                              color: Colors.white,
+                            )
+                          : Icon(
+                              Icons.favorite_border,
+                              color: Colors.white,
+                            ),
                       label: Text(
-                        imgur.favoriteCount.toString(),
+                        imgur.favoriteCount != null ? imgur.favoriteCount.toString() : '',
                         style: TextStyle(color: Colors.white),
                       ),
                     ),

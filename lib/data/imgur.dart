@@ -7,11 +7,12 @@ class Imgur {
   final String cover;
   final bool isAlbum;
   final int commentCount;
+  bool favorite;
   int favoriteCount;
   int points;
   String vote;
 
-  Imgur({this.id, this.title, this.link, this.cover, this.isAlbum, this.commentCount, this.favoriteCount, this.points, this.vote});
+  Imgur({this.id, this.title, this.link, this.cover, this.isAlbum, this.commentCount, this.favoriteCount, this.points, this.vote, this.favorite});
 
   factory Imgur.fromJson(Map<String, dynamic> json) {
     return Imgur(
@@ -23,7 +24,8 @@ class Imgur {
         commentCount: json['comment_count'],
         favoriteCount: json['favorite_count'],
         points: json['points'],
-        vote: json['vote']);
+        vote: json['vote'],
+        favorite: json['favorite']);
   }
 
   static List<Imgur> allFromResponse(String response) {

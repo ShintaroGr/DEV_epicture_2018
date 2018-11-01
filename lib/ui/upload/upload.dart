@@ -57,6 +57,8 @@ class _UploadState extends State<Upload> {
       } else {
         Fluttertoast.showToast(msg: "Failed", toastLength: Toast.LENGTH_SHORT, gravity: ToastGravity.TOP, timeInSecForIos: 1, bgcolor: "#F44336", textcolor: '#ffffff');
       }
+      Navigator.pop(context);
+      Navigator.pop(context);
     }
   }
 
