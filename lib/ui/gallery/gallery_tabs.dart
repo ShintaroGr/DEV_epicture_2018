@@ -7,7 +7,7 @@ class GalleryTabs extends StatefulWidget {
   GalleryTabs({this.tag = ''});
 
   @override
-  _GalleryTabsState createState() => new _GalleryTabsState(tag: this.tag);
+  _GalleryTabsState createState() => _GalleryTabsState(tag: this.tag);
 }
 
 class _GalleryTabsState extends State<GalleryTabs> with SingleTickerProviderStateMixin {
@@ -30,12 +30,12 @@ class _GalleryTabsState extends State<GalleryTabs> with SingleTickerProviderStat
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return Scaffold(
       backgroundColor: Color.fromARGB(255, 25, 25, 25),
-      body: new Scaffold(
-        appBar: new AppBar(
+      body: Scaffold(
+        appBar: AppBar(
           automaticallyImplyLeading: false,
-          title: new TabBar(
+          title: TabBar(
             controller: _tabController,
             tabs: [
               Tab(
@@ -47,14 +47,14 @@ class _GalleryTabsState extends State<GalleryTabs> with SingleTickerProviderStat
             ],
           ),
         ),
-        body: new TabBarView(
+        body: TabBarView(
           controller: _tabController,
           children: <Widget>[
-            ImgurList(
+            Gallery(
               sort: 'hot',
               tag: this.tag,
             ),
-            ImgurList(
+            Gallery(
               sort: 'top',
               tag: this.tag,
             )

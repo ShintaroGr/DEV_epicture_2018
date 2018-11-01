@@ -1,12 +1,12 @@
 import 'package:dev_epicture_2018/data/imgur.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_networkimage/flutter_advanced_networkimage.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:share/share.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-// Define a Custom Form Widget
 class ImgurCard extends StatefulWidget {
-  Imgur imgur;
+  final Imgur imgur;
 
   ImgurCard({this.imgur});
 
@@ -80,15 +80,15 @@ class _ImgurCardState extends State<ImgurCard> {
 
   @override
   Widget build(BuildContext context) {
-    return new Card(
+    return Card(
       color: Colors.black,
       margin: const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
-      child: new InkWell(
+      child: InkWell(
         onTap: () {},
-        child: new Center(
-          child: new Padding(
+        child: Center(
+          child: Padding(
             padding: const EdgeInsets.fromLTRB(4.0, 15.0, 4.0, 4.0),
-            child: new Column(
+            child: Column(
               children: <Widget>[
                 Text(
                   imgur.title,
@@ -108,50 +108,52 @@ class _ImgurCardState extends State<ImgurCard> {
                   children: <Widget>[
                     Row(
                       children: <Widget>[
-                        new IconButton(
+                        IconButton(
                           onPressed: () async {
                             await voteUp(imgur);
                           },
-                          icon: new Icon(
+                          icon: Icon(
                             Icons.thumb_up,
                             color: Colors.white,
                           ),
                         ),
-                        new Text(
+                        Text(
                           imgur.points.toString(),
                           style: TextStyle(color: Colors.white),
                         ),
-                        new IconButton(
+                        IconButton(
                           onPressed: () async {
                             await voteDown(imgur);
                           },
-                          icon: new Icon(
+                          icon: Icon(
                             Icons.thumb_down,
                             color: Colors.white,
                           ),
                         ),
                       ],
                     ),
-                    new FlatButton.icon(
+                    FlatButton.icon(
                       onPressed: () async {
                         await fav(imgur);
                       },
-                      icon: new Icon(
-                        Icons.favorite,
+                      icon: Icon(
+                        Icons.favorite_border,
                         color: Colors.white,
                       ),
-                      label: new Text(
+                      label: Text(
                         imgur.favoriteCount.toString(),
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
-                    new FlatButton.icon(
-                      onPressed: null,
-                      icon: new Icon(
+                    FlatButton.icon(
+                      onPressed: () {
+                        Share.share(imgur.title + '\n' + imgur.link);
+                      },
+                      icon: Icon(
                         Icons.share,
                         color: Colors.white,
                       ),
-                      label: new Text(
+                      label: Text(
                         'Share',
                         style: TextStyle(color: Colors.white),
                       ),

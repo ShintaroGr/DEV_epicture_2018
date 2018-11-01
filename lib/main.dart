@@ -4,20 +4,20 @@ import 'package:flutter/services.dart';
 
 void main() {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then((_) {
-    runApp(new MyApp());
+    runApp(MyApp());
   });
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: new ThemeData(
+      theme: ThemeData(
         primaryColor: Colors.black,
         accentColor: Colors.white,
       ),
-      home: new HomePage(),
+      home: HomePage(),
     );
   }
 }

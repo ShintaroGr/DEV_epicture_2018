@@ -13,13 +13,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
   @override
-  _HomePageState createState() => new _HomePageState();
+  _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
   TabController _tabController;
   int _currentIndex = 0;
-  List<Widget> _children = [new GalleryTabs(), new Search(), new Favorite(), new MyGallery()];
+  List<Widget> _children = [GalleryTabs(), Search(), Favorite(), MyGallery()];
 
   @override
   void initState() {
@@ -40,7 +40,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   }
 
   Future<Stream<String>> _server() async {
-    final StreamController<String> onCode = new StreamController();
+    final StreamController<String> onCode = StreamController();
     HttpServer server = await HttpServer.bind(InternetAddress.loopbackIPv4, 8080);
     server.listen((HttpRequest request) async {
       request.response
@@ -64,49 +64,49 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-        bottomNavigationBar: new Theme(
+    return Scaffold(
+        bottomNavigationBar: Theme(
           data: Theme.of(context)
-              .copyWith(canvasColor: Colors.black, primaryColor: Colors.white, textTheme: Theme.of(context).textTheme.copyWith(caption: new TextStyle(color: Colors.grey))),
-          child: new BottomNavigationBar(
+              .copyWith(canvasColor: Colors.black, primaryColor: Colors.white, textTheme: Theme.of(context).textTheme.copyWith(caption: TextStyle(color: Colors.grey))),
+          child: BottomNavigationBar(
             onTap: onTabTapped,
             type: BottomNavigationBarType.fixed,
             currentIndex: this._currentIndex,
             items: [
-              new BottomNavigationBarItem(
-                icon: new Icon(Icons.home),
-                title: new Text("Home"),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                title: Text("Home"),
               ),
-              new BottomNavigationBarItem(
-                icon: new Icon(Icons.search),
-                title: new Text("Search"),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.search),
+                title: Text("Search"),
               ),
-              new BottomNavigationBarItem(
-                icon: new Icon(Icons.favorite),
-                title: new Text("Favorite"),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.favorite),
+                title: Text("Favorite"),
               ),
-              new BottomNavigationBarItem(
-                icon: new Icon(Icons.image),
-                title: new Text("My"),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.image),
+                title: Text("My"),
               ),
             ],
           ),
         ),
         drawer: Drawer(
-          child: new Scaffold(
-            appBar: new AppBar(
+          child: Scaffold(
+            appBar: AppBar(
               automaticallyImplyLeading: false,
-              title: new ButtonBar(
+              title: ButtonBar(
                 alignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  new MaterialButton(
+                  MaterialButton(
                     onPressed: () async {
                       Navigator.push(
                         context,
-                        new MaterialPageRoute(
+                        MaterialPageRoute(
                           builder: (context) => WebviewScaffold(
                                 url: "https://api.imgur.com/oauth2/authorize?client_id=4525911e004914a&response_type=token",
-                                appBar: new AppBar(
+                                appBar: AppBar(
                                   title: const Text('Login'),
                                 ),
                                 withZoom: true,
@@ -126,33 +126,33 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                       await prefs.setString('access_token', tokens[0]);
                       await prefs.setString('refresh_token', tokens[1]);
                     },
-                    child: new Row(
+                    child: Row(
                       children: <Widget>[
-                        new Icon(
+                        Icon(
                           Icons.account_circle,
                           color: Colors.white,
                         ),
-                        new Text(
+                        Text(
                           " Login",
                           style: TextStyle(color: Colors.white),
                         )
                       ],
                     ),
                   ),
-                  new MaterialButton(
+                  MaterialButton(
                     onPressed: () async {
                       Navigator.push(
                         context,
-                        new MaterialPageRoute(builder: (context) => Upload()),
+                        MaterialPageRoute(builder: (context) => Upload()),
                       );
                     },
-                    child: new Row(
+                    child: Row(
                       children: <Widget>[
-                        new Icon(
+                        Icon(
                           Icons.add,
                           color: Colors.white,
                         ),
-                        new Text(
+                        Text(
                           " Upload",
                           style: TextStyle(color: Colors.white),
                         )
@@ -162,11 +162,11 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 ],
               ),
             ),
-            body: new TagListPage(),
+            body: TagListPage(),
           ),
         ),
-        appBar: new AppBar(
-          title: new Text('Epicture {Imgur}'),
+        appBar: AppBar(
+          title: Text('Epicture {Imgur}'),
           actions: <Widget>[],
         ),
         backgroundColor: Color.fromARGB(255, 50, 50, 50),

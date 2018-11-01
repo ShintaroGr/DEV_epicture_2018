@@ -1,17 +1,14 @@
 import 'package:dev_epicture_2018/data/imgur.dart';
-import 'package:dev_epicture_2018/ui/imgur/simple_card.dart';
+import 'package:dev_epicture_2018/ui/imgur/card.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-// Define a Custom Form Widget
 class Search extends StatefulWidget {
   @override
   _SearchState createState() => _SearchState();
 }
 
-// Define a corresponding State class. This class will hold the data related to
-// our Form.
 class _SearchState extends State<Search> {
   List<Imgur> _imgurs = [];
   String _searchText;
@@ -35,15 +32,15 @@ class _SearchState extends State<Search> {
       if (_imgurs.isEmpty)
         _imgurs = Imgur.allFromResponse(response.body);
       else {
-        _imgurs = new List.from(_imgurs)..addAll(Imgur.allFromResponse(response.body));
+        _imgurs = List.from(_imgurs)..addAll(Imgur.allFromResponse(response.body));
       }
     });
   }
 
-  Widget _buildImgurListTile(BuildContext context, int index) {
+  Widget _buildGalleryTile(BuildContext context, int index) {
     var imgur = _imgurs[index];
 
-    return new ImgurCard(
+    return ImgurCard(
       imgur: imgur,
     );
   }
@@ -53,34 +50,34 @@ class _SearchState extends State<Search> {
     Widget content;
 
     if (_searchText == null || _searchText.isEmpty) {
-      content = new Center(
-        child: new Icon(
+      content = Center(
+        child: Icon(
           Icons.search,
           size: 80.0,
           color: Colors.white,
         ),
       );
     } else if (_imgurs.isEmpty) {
-      content = new Center(
-        child: new CircularProgressIndicator(),
+      content = Center(
+        child: CircularProgressIndicator(),
       );
     } else {
-      content = new ListView.builder(
+      content = ListView.builder(
         itemCount: _imgurs.length,
-        itemBuilder: _buildImgurListTile,
+        itemBuilder: _buildGalleryTile,
       );
     }
 
     return Scaffold(
-      appBar: new AppBar(
+      appBar: AppBar(
         title: TextField(
           autofocus: true,
           decoration: InputDecoration(
             hintText: 'Please enter a search term',
-            hintStyle: new TextStyle(color: Colors.grey, fontWeight: FontWeight.normal),
+            hintStyle: TextStyle(color: Colors.grey, fontWeight: FontWeight.normal),
             fillColor: Colors.white,
           ),
-          style: new TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20.0),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20.0),
           onSubmitted: (text) {
             search(text);
           },

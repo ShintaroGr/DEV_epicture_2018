@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class Upload extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => new _UploadState();
+  State<StatefulWidget> createState() => _UploadState();
 }
 
 class _ImgurData {
@@ -18,8 +18,8 @@ class _ImgurData {
 }
 
 class _UploadState extends State<Upload> {
-  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
-  final _data = new _ImgurData();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final _data = _ImgurData();
   bool _uploading = false;
 
   Future getGallery() async {
@@ -62,26 +62,26 @@ class _UploadState extends State<Upload> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return Scaffold(
       backgroundColor: Colors.black,
       body: _uploading
-          ? new Center(
-              child: new CircularProgressIndicator(),
+          ? Center(
+              child: CircularProgressIndicator(),
             )
-          : new Container(
-              alignment: new FractionalOffset(0.5, 0.5),
-              padding: new EdgeInsets.all(20.0),
-              child: new Form(
+          : Container(
+              alignment: FractionalOffset(0.5, 0.5),
+              padding: EdgeInsets.all(20.0),
+              child: Form(
                 key: this._formKey,
-                child: new Column(
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    new TextFormField(
-                      decoration: new InputDecoration(
+                    TextFormField(
+                      decoration: InputDecoration(
                         hintText: 'Title',
                         filled: true,
                         fillColor: Colors.white70,
-                        border: new OutlineInputBorder(
+                        border: OutlineInputBorder(
                           borderRadius: const BorderRadius.all(
                             const Radius.circular(50.0),
                           ),
@@ -91,44 +91,44 @@ class _UploadState extends State<Upload> {
                         this._data.title = value;
                       },
                     ),
-                    new ButtonBar(
+                    ButtonBar(
                       alignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        new RaisedButton(
+                        RaisedButton(
                           color: Colors.white30,
                           onPressed: () async {
                             this._data.image = await getCamera();
                             print(_data.image);
                           },
-                          child: new Icon(
+                          child: Icon(
                             Icons.camera_alt,
                             color: Colors.white,
                           ),
                         ),
-                        new RaisedButton(
+                        RaisedButton(
                           color: Colors.white30,
                           onPressed: () async {
                             this._data.image = await getGallery();
                             print(_data.image);
                           },
-                          child: new Icon(
+                          child: Icon(
                             Icons.photo,
                             color: Colors.white,
                           ),
                         ),
                       ],
                     ),
-                    new Container(
-                      child: new RaisedButton(
+                    Container(
+                      child: RaisedButton(
                         shape: StadiumBorder(),
-                        child: new Text(
+                        child: Text(
                           'Upload',
-                          style: new TextStyle(color: Colors.white),
+                          style: TextStyle(color: Colors.white),
                         ),
                         onPressed: () => submit(),
                         color: Colors.white30,
                       ),
-                      margin: new EdgeInsets.only(top: 20.0),
+                      margin: EdgeInsets.only(top: 20.0),
                     )
                   ],
                 ),

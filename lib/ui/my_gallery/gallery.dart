@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class MyGallery extends StatefulWidget {
   @override
-  _MyGalleryState createState() => new _MyGalleryState();
+  _MyGalleryState createState() => _MyGalleryState();
 }
 
 class _MyGalleryState extends State<MyGallery> {
@@ -21,8 +21,8 @@ class _MyGalleryState extends State<MyGallery> {
   void initState() {
     _loadImgur();
     _currentPage = 0;
-    _refreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
-    _scrollController = new ScrollController();
+    _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
+    _scrollController = ScrollController();
     _scrollController.addListener(() {
       double maxScroll = _scrollController.position.maxScrollExtent;
       double currentScroll = _scrollController.position.pixels;
@@ -52,7 +52,7 @@ class _MyGalleryState extends State<MyGallery> {
       if (_imgurs == null || _imgurs.isEmpty)
         _imgurs = Imgur.allFromResponse(response.body);
       else {
-        _imgurs = new List.from(_imgurs)..addAll(Imgur.allFromResponse(response.body));
+        _imgurs = List.from(_imgurs)..addAll(Imgur.allFromResponse(response.body));
       }
     });
   }
@@ -60,15 +60,15 @@ class _MyGalleryState extends State<MyGallery> {
   Widget _buildMyGalleryTile(BuildContext context, int index) {
     var imgur = _imgurs[index];
 
-    return new Card(
+    return Card(
       color: Colors.black,
       margin: const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
-      child: new InkWell(
+      child: InkWell(
         onTap: () {},
-        child: new Center(
-          child: new Padding(
+        child: Center(
+          child: Padding(
             padding: const EdgeInsets.fromLTRB(4.0, 15.0, 4.0, 4.0),
-            child: new Column(
+            child: Column(
               children: <Widget>[
                 Text(
                   imgur.title == null ? '' : imgur.title,
@@ -91,9 +91,8 @@ class _MyGalleryState extends State<MyGallery> {
                         icon: Icon(Icons.delete_forever),
                         label: Text('Delete'),
                         onPressed: () async {
-                          http.Response response;
                           SharedPreferences prefs = await SharedPreferences.getInstance();
-                          response = await http.delete(
+                          await http.delete(
                             'https://api.imgur.com/3/account/me/image/' + imgur.id + '?client_id=4525911e004914a&album_previews=true&mature=true',
                             headers: {'Authorization': 'Bearer ' + prefs.getString('access_token')},
                           );
@@ -118,20 +117,23 @@ class _MyGalleryState extends State<MyGallery> {
     Widget content;
 
     if (_imgurs == null) {
-      content = new Center(
-        child: new CircularProgressIndicator(),
+      content = Center(
+        child: CircularProgressIndicator(),
       );
     } else if (_imgurs.isEmpty) {
-      content = new Center(
-        child: new Column(
+      content = Center(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            new Icon(
+            Icon(
               Icons.search,
               size: 150,
               color: Colors.white,
             ),
-            new Text('Nohting to show here', style: TextStyle(color: Colors.white, fontSize: 20),),
+            Text(
+              'Nohting to show here',
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
           ],
         ),
       );
@@ -153,7 +155,7 @@ class _MyGalleryState extends State<MyGallery> {
       );
     }
 
-    return new Scaffold(
+    return Scaffold(
       backgroundColor: Color.fromARGB(255, 50, 50, 50),
       body: content,
     );

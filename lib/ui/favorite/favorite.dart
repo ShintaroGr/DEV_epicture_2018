@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class Favorite extends StatefulWidget {
   @override
-  _FavoriteState createState() => new _FavoriteState();
+  _FavoriteState createState() => _FavoriteState();
 }
 
 class _FavoriteState extends State<Favorite> {
@@ -21,8 +21,8 @@ class _FavoriteState extends State<Favorite> {
   void initState() {
     _loadImgur();
     _currentPage = 0;
-    _refreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
-    _scrollController = new ScrollController();
+    _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
+    _scrollController = ScrollController();
     _scrollController.addListener(() {
       double maxScroll = _scrollController.position.maxScrollExtent;
       double currentScroll = _scrollController.position.pixels;
@@ -49,7 +49,7 @@ class _FavoriteState extends State<Favorite> {
       if (_imgurs.isEmpty)
         _imgurs = Imgur.allFromResponse(response.body);
       else {
-        _imgurs = new List.from(_imgurs)..addAll(Imgur.allFromResponse(response.body));
+        _imgurs = List.from(_imgurs)..addAll(Imgur.allFromResponse(response.body));
       }
     });
   }
@@ -57,15 +57,15 @@ class _FavoriteState extends State<Favorite> {
   Widget _buildFavoriteTile(BuildContext context, int index) {
     var imgur = _imgurs[index];
 
-    return new Card(
+    return Card(
       color: Colors.black,
       margin: const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
-      child: new InkWell(
+      child: InkWell(
         onTap: () {},
-        child: new Center(
-          child: new Padding(
+        child: Center(
+          child: Padding(
             padding: const EdgeInsets.fromLTRB(4.0, 15.0, 4.0, 4.0),
-            child: new Column(
+            child: Column(
               children: <Widget>[
                 Text(
                   imgur.title,
@@ -113,8 +113,8 @@ class _FavoriteState extends State<Favorite> {
     Widget content;
 
     if (_imgurs.isEmpty) {
-      content = new Center(
-        child: new CircularProgressIndicator(),
+      content = Center(
+        child: CircularProgressIndicator(),
       );
     } else {
       content = RefreshIndicator(
@@ -135,7 +135,7 @@ class _FavoriteState extends State<Favorite> {
       );
     }
 
-    return new Scaffold(
+    return Scaffold(
       backgroundColor: Color.fromARGB(255, 50, 50, 50),
       body: content,
     );

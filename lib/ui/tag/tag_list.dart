@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 
 class TagListPage extends StatefulWidget {
   @override
-  _TagListPageState createState() => new _TagListPageState();
+  _TagListPageState createState() => _TagListPageState();
 }
 
 class _TagListPageState extends State<TagListPage> {
@@ -31,12 +31,12 @@ class _TagListPageState extends State<TagListPage> {
   Widget _buildTagListTile(BuildContext context, int index) {
     var tag = _tags[index];
 
-    return new Card(
+    return Card(
       color: Colors.black,
       margin: const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
-      child: new Container(
-        decoration: new BoxDecoration(
-          image: new DecorationImage(
+      child: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
             image: AdvancedNetworkImage(
               'https://i.imgur.com/' + tag.backgroundHash + '.png',
               useDiskCache: true,
@@ -44,18 +44,18 @@ class _TagListPageState extends State<TagListPage> {
             fit: BoxFit.cover,
           ),
         ),
-        child: new MaterialButton(
+        child: MaterialButton(
           onPressed: () {
             Navigator.pop(context);
             Navigator.push(
               context,
-              new MaterialPageRoute(builder: (context) => new TagPage(tag: tag.name)),
+              MaterialPageRoute(builder: (context) => TagPage(tag: tag.name)),
             );
           },
-          child: new Center(
-            child: new Padding(
+          child: Center(
+            child: Padding(
               padding: const EdgeInsets.fromLTRB(4.0, 15.0, 4.0, 15.0),
-              child: new Column(
+              child: Column(
                 children: <Widget>[
                   Text(
                     tag.displayName,
@@ -75,20 +75,20 @@ class _TagListPageState extends State<TagListPage> {
     Widget content;
 
     if (_tags.isEmpty) {
-      content = new Center(
-        child: new CircularProgressIndicator(),
+      content = Center(
+        child: CircularProgressIndicator(),
       );
     } else {
-      content = new ListView.builder(
+      content = ListView.builder(
         itemCount: _tags.length,
         itemBuilder: _buildTagListTile,
       );
     }
 
-    return new Scaffold(
-      appBar: new AppBar(
+    return Scaffold(
+      appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: new Text('Tags'),
+        title: Text('Tags'),
       ),
       backgroundColor: Color.fromARGB(255, 50, 50, 50),
       body: content,

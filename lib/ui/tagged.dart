@@ -7,7 +7,7 @@ class TagPage extends StatefulWidget {
   TagPage({this.tag = ''});
 
   @override
-  _TagPageState createState() => new _TagPageState(tag: this.tag);
+  _TagPageState createState() => _TagPageState(tag: this.tag);
 }
 
 class _TagPageState extends State<TagPage> with SingleTickerProviderStateMixin {
@@ -17,8 +17,8 @@ class _TagPageState extends State<TagPage> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-        appBar: new AppBar(title: new Text(this.tag)),
+    return Scaffold(
+        appBar: AppBar(title: Text(this.tag)),
         backgroundColor: Color.fromARGB(255, 50, 50, 50),
         body: GalleryTabs(
           tag: this.tag,

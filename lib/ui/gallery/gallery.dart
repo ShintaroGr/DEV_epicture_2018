@@ -1,22 +1,22 @@
 import 'dart:async';
 
 import 'package:dev_epicture_2018/data/imgur.dart';
-import 'package:dev_epicture_2018/ui/imgur/simple_card.dart';
+import 'package:dev_epicture_2018/ui/imgur/card.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-class ImgurList extends StatefulWidget {
+class Gallery extends StatefulWidget {
   final String tag;
   final String sort;
 
-  ImgurList({this.tag = '', this.sort = 'hot'});
+  Gallery({this.tag = '', this.sort = 'hot'});
 
   @override
-  _ImgurListState createState() => new _ImgurListState(tag: this.tag, sort: this.sort);
+  _GalleryState createState() => _GalleryState(tag: this.tag, sort: this.sort);
 }
 
-class _ImgurListState extends State<ImgurList> {
+class _GalleryState extends State<Gallery> {
   List<Imgur> _imgurs = [];
   int _currentPage;
   ScrollController _scrollController;
@@ -24,14 +24,14 @@ class _ImgurListState extends State<ImgurList> {
   final String tag;
   final String sort;
 
-  _ImgurListState({this.tag = '', this.sort = 'hot'});
+  _GalleryState({this.tag = '', this.sort = 'hot'});
 
   @override
   void initState() {
     _loadImgur();
     _currentPage = 0;
-    _refreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
-    _scrollController = new ScrollController();
+    _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
+    _scrollController = ScrollController();
     _scrollController.addListener(() {
       double maxScroll = _scrollController.position.maxScrollExtent;
       double currentScroll = _scrollController.position.pixels;
@@ -61,7 +61,7 @@ class _ImgurListState extends State<ImgurList> {
         if (_imgurs.isEmpty)
           _imgurs = Imgur.allFromResponseTag(response.body);
         else {
-          _imgurs = new List.from(_imgurs)..addAll(Imgur.allFromResponse(response.body));
+          _imgurs = List.from(_imgurs)..addAll(Imgur.allFromResponse(response.body));
         }
       });
     } else {
@@ -71,16 +71,16 @@ class _ImgurListState extends State<ImgurList> {
         if (_imgurs.isEmpty)
           _imgurs = Imgur.allFromResponse(response.body);
         else {
-          _imgurs = new List.from(_imgurs)..addAll(Imgur.allFromResponse(response.body));
+          _imgurs = List.from(_imgurs)..addAll(Imgur.allFromResponse(response.body));
         }
       });
     }
   }
 
-  Widget _buildImgurListTile(BuildContext context, int index) {
+  Widget _buildGalleryTile(BuildContext context, int index) {
     var imgur = _imgurs[index];
 
-    return new ImgurCard(
+    return ImgurCard(
       imgur: imgur,
     );
   }
@@ -90,8 +90,8 @@ class _ImgurListState extends State<ImgurList> {
     Widget content;
 
     if (_imgurs.isEmpty) {
-      content = new Center(
-        child: new CircularProgressIndicator(),
+      content = Center(
+        child: CircularProgressIndicator(),
       );
     } else {
       content = RefreshIndicator(
@@ -106,12 +106,12 @@ class _ImgurListState extends State<ImgurList> {
         child: ListView.builder(
           controller: _scrollController,
           itemCount: _imgurs.length,
-          itemBuilder: _buildImgurListTile,
+          itemBuilder: _buildGalleryTile,
         ),
       );
     }
 
-    return new Scaffold(
+    return Scaffold(
       backgroundColor: Color.fromARGB(255, 25, 25, 25),
       body: content,
     );
