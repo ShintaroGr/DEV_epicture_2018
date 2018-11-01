@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 class Gallery extends StatefulWidget {
   final dataCallback;
 
-  Gallery({@required this.dataCallback, Key key}): super(key:key);
+  Gallery({@required this.dataCallback, Key key}) : super(key: key);
 
   @override
   GalleryState createState() => GalleryState(dataCallback: this.dataCallback);

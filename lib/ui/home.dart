@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dev_epicture_2018/ui/favorite/favorite.dart';
+import 'package:dev_epicture_2018/ui/gallery/favorite.dart';
 import 'package:dev_epicture_2018/ui/gallery/gallery_tabs.dart';
-import 'package:dev_epicture_2018/ui/my_gallery/gallery.dart';
-import 'package:dev_epicture_2018/ui/search.dart';
+import 'package:dev_epicture_2018/ui/gallery/my.dart';
+import 'package:dev_epicture_2018/ui/gallery/search.dart';
 import 'package:dev_epicture_2018/ui/tag/tag_list.dart';
 import 'package:dev_epicture_2018/ui/upload/upload.dart';
 import 'package:flutter/material.dart';
