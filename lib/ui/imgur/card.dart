@@ -1,4 +1,5 @@
 import 'package:dev_epicture_2018/data/imgur.dart';
+import 'package:dev_epicture_2018/ui/imgur/details.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_networkimage/flutter_advanced_networkimage.dart';
 import 'package:http/http.dart' as http;
@@ -103,10 +104,20 @@ class _ImgurCardState extends State<ImgurCard> {
                 Divider(
                   color: Colors.grey,
                 ),
-                Image(
-                  image: AdvancedNetworkImage(
-                    imgur.cover == null ? imgur.link : 'https://i.imgur.com/' + imgur.cover + '.png',
-                    useDiskCache: true,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ImgurDetails(imgur: imgur),
+                      ),
+                    );
+                  },
+                  child: Image(
+                    image: AdvancedNetworkImage(
+                      imgur.cover == null ? imgur.link : 'https://i.imgur.com/' + imgur.cover + '.png',
+                      useDiskCache: true,
+                    ),
                   ),
                 ),
                 Row(
@@ -149,7 +160,7 @@ class _ImgurCardState extends State<ImgurCard> {
                             )
                           : Icon(
                               Icons.favorite_border,
-                              color: Colors.white,
+                              color: Colors.grey,
                             ),
                       label: Text(
                         imgur.favoriteCount != null ? imgur.favoriteCount.toString() : '',
@@ -168,7 +179,7 @@ class _ImgurCardState extends State<ImgurCard> {
                         'Share',
                         style: TextStyle(color: Colors.white),
                       ),
-                    )
+                    ),
                   ],
                 )
               ],
