@@ -41,13 +41,25 @@ class _CommentCardState extends State<CommentCard> {
                           ),
                           Row(
                             children: <Widget>[
-                              Icon(Icons.comment, size: 15, color: Colors.white,),
-                              Text(' ' +comment.children.length.toString(), style: TextStyle(fontSize: 15, color: Colors.white,),),
+                              Icon(
+                                Icons.comment,
+                                size: 15,
+                                color: Colors.white,
+                              ),
+                              Text(
+                                ' ' + comment.children.length.toString(),
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.white,
+                                ),
+                              ),
                             ],
                           )
                         ],
                       ),
-                      Divider(height: 10,),
+                      Divider(
+                        height: 10,
+                      ),
                       Text(
                         comment.comment == null ? '' : comment.comment,
                         style: TextStyle(fontSize: 12.0, color: Colors.white),
