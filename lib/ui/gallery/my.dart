@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:dev_epicture_2018/data/imgur.dart';
+import 'package:dev_epicture_2018/ui/upload/upload.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_networkimage/flutter_advanced_networkimage.dart';
 import 'package:http/http.dart' as http;
@@ -122,19 +123,18 @@ class _MyGalleryState extends State<MyGallery> {
       );
     } else if (_imgurs.isEmpty) {
       content = Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Icon(
-              Icons.search,
-              size: 150,
-              color: Colors.white,
-            ),
-            Text(
-              'Nohting to show here',
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            ),
-          ],
+        child: IconButton(
+          iconSize: 100,
+          icon: Icon(
+            Icons.add,
+            color: Colors.white,
+          ),
+          onPressed: () async {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Upload()),
+            );
+          },
         ),
       );
     } else {
@@ -156,7 +156,7 @@ class _MyGalleryState extends State<MyGallery> {
     }
 
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 50, 50, 50),
+      backgroundColor: Color.fromARGB(255, 25, 25, 25),
       body: content,
     );
   }
