@@ -14,7 +14,7 @@ class Gallery extends StatefulWidget {
 }
 
 class GalleryState extends State<Gallery> {
-  List<Imgur> _imgurs = [];
+  List<Imgur> _imgurs;
   int _currentPage;
   ScrollController _scrollController;
   GlobalKey<RefreshIndicatorState> _refreshIndicatorKey;
@@ -23,9 +23,8 @@ class GalleryState extends State<Gallery> {
   GalleryState({@required this.dataCallback});
 
   refresh() {
-    print('ALED');
     setState(() {
-      this._imgurs = [];
+      this._imgurs = null;
 
       this.dataCallback(this._currentPage).then((res) {
         if (!this.mounted) {
@@ -65,8 +64,9 @@ class GalleryState extends State<Gallery> {
 
   Future<void> _loadImgur({int page = 0}) async {
     List<Imgur> response = await dataCallback(page);
+    print(response);
     setState(() {
-      if (_imgurs.isEmpty)
+      if (_imgurs == null || _imgurs.isEmpty)
         _imgurs = response;
       else {
         _imgurs = List.from(_imgurs)..addAll(response);
@@ -86,9 +86,26 @@ class GalleryState extends State<Gallery> {
   Widget build(BuildContext context) {
     Widget content;
 
-    if (_imgurs.isEmpty) {
+    if (_imgurs == null) {
       content = Center(
         child: CircularProgressIndicator(),
+      );
+    } else if (_imgurs.isEmpty) {
+      content = Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(
+              Icons.search,
+              size: 150,
+              color: Colors.white,
+            ),
+            Text(
+              'Nohting to show here',
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+          ],
+        ),
       );
     } else {
       content = RefreshIndicator(
@@ -96,7 +113,7 @@ class GalleryState extends State<Gallery> {
         key: _refreshIndicatorKey,
         onRefresh: () {
           setState(() {
-            _imgurs = [];
+            _imgurs = null;
             _loadImgur();
           });
         },
