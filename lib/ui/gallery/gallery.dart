@@ -64,7 +64,6 @@ class GalleryState extends State<Gallery> {
 
   Future<void> _loadImgur({int page = 0}) async {
     List<Imgur> response = await dataCallback(page);
-    print(response);
     setState(() {
       if (_imgurs == null || _imgurs.isEmpty)
         _imgurs = response;

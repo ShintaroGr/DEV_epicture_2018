@@ -100,7 +100,6 @@ class _UploadState extends State<Upload> {
                           color: Colors.white30,
                           onPressed: () async {
                             this._data.image = await getCamera();
-                            print(_data.image);
                           },
                           child: Icon(
                             Icons.camera_alt,
@@ -111,7 +110,6 @@ class _UploadState extends State<Upload> {
                           color: Colors.white30,
                           onPressed: () async {
                             this._data.image = await getGallery();
-                            print(_data.image);
                           },
                           child: Icon(
                             Icons.photo,

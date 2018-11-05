@@ -15,7 +15,6 @@ class Imgur {
   Imgur({this.id, this.title, this.link, this.cover, this.isAlbum, this.commentCount, this.favoriteCount, this.points, this.vote, this.favorite = false});
 
   factory Imgur.fromJson(Map<String, dynamic> json) {
-    print("AAAAAAAAAAAAAAAAAAAA " + (json['favorite'] ?? false).toString());
     return Imgur(
         id: json['id'],
         title: json['title'],

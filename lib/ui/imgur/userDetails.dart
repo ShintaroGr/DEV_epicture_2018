@@ -44,7 +44,6 @@ class _UserDetailsState extends State<UserDetails> {
       headers: {'Authorization': 'Bearer ' + prefs.getString('access_token')},
     );
     setState(() {
-      print(response.body);
       _user = User.fromResponse(response.body);
     });
   }
@@ -133,7 +132,6 @@ class _UserDetailsState extends State<UserDetails> {
       'https://api.imgur.com/3/account/' + username + '/submissions/' + page.toString() + '&album_previews=true&mature=true',
       headers: {'Authorization': 'Bearer ' + prefs.getString('access_token')},
     );
-    print(response.body);
     return Imgur.allFromResponse(response.body);
   }
 

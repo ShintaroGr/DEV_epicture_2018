@@ -22,7 +22,6 @@ class _ImgurCardState extends State<ImgurCard> {
 
   Future voteUp(Imgur imgur) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    print(imgur.vote);
     if (imgur.vote == 'up') {
       await http.post('https://api.imgur.com/3/gallery/' + imgur.id + '/vote/veto', headers: {'Authorization': 'Bearer ' + prefs.getString('access_token')});
       setState(() {
@@ -46,7 +45,6 @@ class _ImgurCardState extends State<ImgurCard> {
 
   Future voteDown(Imgur imgur) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    print(imgur.vote);
     if (imgur.vote == 'down') {
       await http.post('https://api.imgur.com/3/gallery/' + imgur.id + '/vote/veto', headers: {'Authorization': 'Bearer ' + prefs.getString('access_token')});
       setState(() {
