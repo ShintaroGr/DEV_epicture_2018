@@ -22,6 +22,7 @@ class _ImgurDetailsState extends State<ImgurDetails> {
 
   _ImgurDetailsState({this.imgur});
 
+  @override
   void initState() {
     super.initState();
     _loadComments();

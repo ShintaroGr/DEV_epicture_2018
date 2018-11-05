@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dev_epicture_2018/data/comment.dart';
+import 'package:dev_epicture_2018/ui/imgur/userDetails.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_networkimage/flutter_advanced_networkimage.dart';
 import 'package:http/http.dart' as http;
@@ -56,12 +57,12 @@ class _CommentCardState extends State<CommentCard> {
                           ),
                           MaterialButton(
                             onPressed: () {
-                              /*Navigator.push(
+                              Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => AccountDetails(account: comment.author),
+                                  builder: (context) => UserDetails(username: comment.author),
                                 ),
-                              );*/
+                              );
                             },
                             child: Text(
                               getName(comment.author) ?? '',
@@ -124,12 +125,12 @@ class _CommentCardState extends State<CommentCard> {
                           ),
                           MaterialButton(
                             onPressed: () {
-                              /*Navigator.push(
+                              Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => AccountDetails(account: comment.author),
+                                  builder: (context) => UserDetails(username: comment.author),
                                 ),
-                              );*/
+                              );
                             },
                             child: Text(
                               getName(comment.author) ?? '',
