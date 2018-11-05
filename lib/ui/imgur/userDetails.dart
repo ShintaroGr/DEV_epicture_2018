@@ -81,7 +81,7 @@ class _UserDetailsState extends State<UserDetails> {
   }
 
   String _formatBio(String bio) {
-    if (bio.length >= 155)
+    if (bio != null && bio.length >= 155)
       return bio.substring(0, 155) + '...';
     else
       return bio;
