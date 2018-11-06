@@ -5,22 +5,24 @@ import 'package:dev_epicture_2018/ui/imgur/card.dart';
 import 'package:flutter/material.dart';
 
 class Gallery extends StatefulWidget {
+  final cardActions;
   final dataCallback;
 
-  Gallery({@required this.dataCallback, Key key}) : super(key: key);
+  Gallery({@required this.dataCallback, this.cardActions, Key key}) : super(key: key);
 
   @override
-  GalleryState createState() => GalleryState(dataCallback: this.dataCallback);
+  GalleryState createState() => GalleryState(dataCallback: this.dataCallback, cardActions: this.cardActions);
 }
 
 class GalleryState extends State<Gallery> {
+  final cardActions;
   List<Imgur> _imgurs;
   int _currentPage;
   ScrollController _scrollController;
   GlobalKey<RefreshIndicatorState> _refreshIndicatorKey;
   final dataCallback;
 
-  GalleryState({@required this.dataCallback});
+  GalleryState({@required this.dataCallback, this.cardActions});
 
   refresh() {
     setState(() {
@@ -64,19 +66,22 @@ class GalleryState extends State<Gallery> {
 
   Future<void> _loadImgur({int page = 0}) async {
     List<Imgur> response = await dataCallback(page);
-    setState(() {
-      if (_imgurs == null || _imgurs.isEmpty)
-        _imgurs = response;
-      else {
-        _imgurs = List.from(_imgurs)..addAll(response);
-      }
-    });
+    if (this.mounted) {
+      setState(() {
+        if (_imgurs == null || _imgurs.isEmpty)
+          _imgurs = response;
+        else {
+          _imgurs = List.from(_imgurs)..addAll(response);
+        }
+      });
+    }
   }
 
   Widget _buildGalleryTile(BuildContext context, int index) {
     var imgur = _imgurs[index];
 
     return ImgurCard(
+      actionBar: this.cardActions,
       imgur: imgur,
     );
   }

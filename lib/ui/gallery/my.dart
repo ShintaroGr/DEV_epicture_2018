@@ -1,113 +1,208 @@
-import 'dart:async';
-
 import 'package:dev_epicture_2018/data/imgur.dart';
-import 'package:dev_epicture_2018/ui/upload/upload.dart';
+import 'package:dev_epicture_2018/data/user.dart';
+import 'package:dev_epicture_2018/ui/gallery/gallery.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_networkimage/flutter_advanced_networkimage.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-class MyGallery extends StatefulWidget {
+class DialogonalClipper extends CustomClipper<Path> {
   @override
-  _MyGalleryState createState() => _MyGalleryState();
+  Path getClip(Size size) {
+    Path path = Path();
+    path.lineTo(0.0, size.height - 110);
+    path.lineTo(size.width, size.height - 110);
+    path.lineTo(size.width, 0.0);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => true;
 }
 
-class _MyGalleryState extends State<MyGallery> {
-  List<Imgur> _imgurs;
-  int _currentPage;
-  ScrollController _scrollController;
-  GlobalKey<RefreshIndicatorState> _refreshIndicatorKey;
+class MyDetails extends StatefulWidget {
+  final String username;
+
+  MyDetails({this.username});
 
   @override
-  void initState() {
-    _loadImgur();
-    _currentPage = 0;
-    _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
-    _scrollController = ScrollController();
-    _scrollController.addListener(() {
-      double maxScroll = _scrollController.position.maxScrollExtent;
-      double currentScroll = _scrollController.position.pixels;
-      double delta = 200.0;
-      if (maxScroll - currentScroll <= delta) {
-        this._currentPage += 1;
-        _loadImgur(page: _currentPage);
-      }
+  _MyDetailsState createState() => _MyDetailsState(username: this.username ?? 'me');
+}
+
+class _MyDetailsState extends State<MyDetails> with SingleTickerProviderStateMixin {
+  TabController _tabController;
+  final String username;
+  User _user;
+
+  _MyDetailsState({this.username});
+
+  Future<void> _getUserInfo() async {
+    http.Response response;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    response = await http.get(
+      'https://api.imgur.com/3/account/' + username + '?client_id=4525911e004914a',
+      headers: {'Authorization': 'Bearer ' + prefs.getString('access_token')},
+    );
+    setState(() {
+      _user = User.fromResponse(response.body);
     });
+  }
+
+  @override
+  initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+    _getUserInfo();
   }
 
   @override
   dispose() {
-    _scrollController.dispose();
+    _tabController.dispose();
     super.dispose();
   }
 
-  Future<void> _loadImgur({int page = 0}) async {
-    http.Response response;
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    response = await http.get(
-      'https://api.imgur.com/3/account/me/images/' + page.toString() + '?client_id=4525911e004914a&album_previews=true&mature=true',
-      headers: {'Authorization': 'Bearer ' + prefs.getString('access_token')},
+  Widget _buildImage() {
+    return ClipPath(
+      clipper: DialogonalClipper(),
+      child: Image(
+        image: AdvancedNetworkImage(_user.cover),
+        fit: BoxFit.fitHeight,
+        height: 250,
+        colorBlendMode: BlendMode.srcOver,
+        color: Color.fromARGB(120, 20, 10, 40),
+      ),
     );
-    setState(() {
-      if (_imgurs == null || _imgurs.isEmpty)
-        _imgurs = Imgur.allFromResponse(response.body);
-      else {
-        _imgurs = List.from(_imgurs)..addAll(Imgur.allFromResponse(response.body));
-      }
-    });
   }
 
-  Widget _buildMyGalleryTile(BuildContext context, int index) {
-    var imgur = _imgurs[index];
+  Widget _buildTopHeader() {
+    return new Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 40.0),
+      child: IconButton(
+        icon: Icon(Icons.arrow_back, size: 32.0, color: Colors.white),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+    );
+  }
 
-    return Card(
-      color: Colors.black,
-      margin: const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
-      child: InkWell(
-        onTap: () {},
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(4.0, 15.0, 4.0, 4.0),
+  String _formatBio(String bio) {
+    if (bio != null && bio.length >= 100)
+      return bio.substring(0, 100) + '...';
+    else
+      return bio;
+  }
+
+  Widget _buildProfileRow() {
+    return Padding(
+      padding: EdgeInsets.only(left: 16.0, top: 40),
+      child: Row(
+        children: <Widget>[
+          CircleAvatar(
+            minRadius: 28.0,
+            maxRadius: 28.0,
+            backgroundImage: AdvancedNetworkImage(_user.avatar),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 16.0),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Text(
-                  imgur.title == null ? '' : imgur.title,
-                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold, color: Colors.white),
-                ),
-                Divider(
-                  color: Colors.grey,
-                ),
-                Image(
-                  image: AdvancedNetworkImage(
-                    imgur.cover == null ? imgur.link : 'https://i.imgur.com/' + imgur.cover + '.png',
-                    useDiskCache: true,
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.70,
+                  child: Text(
+                    _user.url ?? username ?? '',
+                    style: TextStyle(fontSize: 26.0, color: Colors.white, fontWeight: FontWeight.w400),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                ButtonTheme.bar(
-                  // make buttons use the appropriate styles for cards
-                  child: ButtonBar(
-                    children: <Widget>[
-                      FlatButton.icon(
-                        icon: Icon(Icons.delete_forever),
-                        label: Text('Delete'),
-                        onPressed: () async {
-                          SharedPreferences prefs = await SharedPreferences.getInstance();
-                          await http.delete(
-                            'https://api.imgur.com/3/account/me/image/' + imgur.id + '?client_id=4525911e004914a&album_previews=true&mature=true',
-                            headers: {'Authorization': 'Bearer ' + prefs.getString('access_token')},
-                          );
-                          setState(() {
-                            _imgurs.removeAt(_imgurs.indexWhere((item) => item.id == imgur.id));
-                          });
-                        },
-                      ),
-                    ],
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.70,
+                  child: Text(
+                    _formatBio(_user.bio) ?? '',
+                    style: TextStyle(fontSize: 14.0, color: Colors.white, fontWeight: FontWeight.w300),
                   ),
                 ),
               ],
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  getSubmissions({int page = 0}) async {
+    http.Response response;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    response = await http.get(
+      'https://api.imgur.com/3/account/' + username + '/images/' + page.toString() + '?client_id=4525911e004914a&album_previews=true&mature=true',
+      headers: {'Authorization': 'Bearer ' + prefs.getString('access_token')},
+    );
+    print(response.body);
+    return Imgur.allFromResponse(response.body);
+  }
+
+  getFavorites({int page = 0}) async {
+    http.Response response;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    response = await http.get(
+      'https://api.imgur.com/3/account/' + username + '/gallery_favorites/' + page.toString() + '?client_id=4525911e004914a&album_previews=true&mature=true',
+      headers: {'Authorization': 'Bearer ' + prefs.getString('access_token')},
+    );
+    return Imgur.allFromResponse(response.body);
+  }
+
+  Widget _buildActionCard(Imgur imgur) {
+    return FlatButton.icon(
+      icon: Icon(
+        Icons.delete_forever,
+        color: Colors.white,
+      ),
+      label: Text(
+        'Delete',
+        style: TextStyle(color: Colors.white),
+      ),
+      onPressed: () async {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await http.delete(
+          'https://api.imgur.com/3/account/me/image/' + imgur.id + '?client_id=4525911e004914a&album_previews=true&mature=true',
+          headers: {'Authorization': 'Bearer ' + prefs.getString('access_token')},
+        );
+      },
+    );
+  }
+
+  Widget _buildBottomPart() {
+    return Padding(
+      padding: EdgeInsets.only(top: 135),
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: TabBar(
+            controller: _tabController,
+            tabs: [
+              Tab(
+                text: 'Posts',
+              ),
+              Tab(
+                text: 'Favorites',
+              ),
+            ],
+          ),
+        ),
+        body: TabBarView(
+          controller: _tabController,
+          children: <Widget>[
+            Gallery(
+              cardActions: (imgur) => _buildActionCard(imgur),
+              dataCallback: (page) => getSubmissions(page: page),
+            ),
+            Gallery(
+              dataCallback: (page) => getFavorites(page: page),
+            )
+          ],
         ),
       ),
     );
@@ -115,49 +210,18 @@ class _MyGalleryState extends State<MyGallery> {
 
   @override
   Widget build(BuildContext context) {
-    Widget content;
-
-    if (_imgurs == null) {
-      content = Center(
-        child: CircularProgressIndicator(),
-      );
-    } else if (_imgurs.isEmpty) {
-      content = Center(
-        child: IconButton(
-          iconSize: 100,
-          icon: Icon(
-            Icons.add,
-            color: Colors.white,
-          ),
-          onPressed: () async {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => Upload()),
-            );
-          },
-        ),
-      );
-    } else {
-      content = RefreshIndicator(
-        color: Colors.black,
-        key: _refreshIndicatorKey,
-        onRefresh: () {
-          setState(() {
-            _imgurs = [];
-            _loadImgur();
-          });
-        },
-        child: ListView.builder(
-          controller: _scrollController,
-          itemCount: _imgurs.length,
-          itemBuilder: _buildMyGalleryTile,
-        ),
-      );
-    }
-
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 25, 25, 25),
-      body: content,
+      body: _user == null
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : Stack(
+              children: <Widget>[
+                _buildBottomPart(),
+                _buildImage(),
+                _buildProfileRow(),
+              ],
+            ),
     );
   }
 }

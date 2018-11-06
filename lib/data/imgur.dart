@@ -6,26 +6,29 @@ class Imgur {
   final String link;
   final String cover;
   final bool isAlbum;
+  final String author;
   final int commentCount;
   bool favorite;
   int favoriteCount;
   int points;
   String vote;
 
-  Imgur({this.id, this.title, this.link, this.cover, this.isAlbum, this.commentCount, this.favoriteCount, this.points, this.vote, this.favorite = false});
+  Imgur({this.id, this.title, this.link, this.cover, this.isAlbum, this.commentCount, this.favoriteCount, this.points, this.vote, this.favorite = false, this.author});
 
   factory Imgur.fromJson(Map<String, dynamic> json) {
     return Imgur(
-        id: json['id'],
-        title: json['title'],
-        link: json['link'],
-        cover: json['cover'],
-        isAlbum: json['is_album'],
-        commentCount: json['comment_count'],
-        favoriteCount: json['favorite_count'],
-        points: json['points'],
-        vote: json['vote'],
-        favorite: (json['favorite'] ?? false));
+      id: json['id'],
+      title: json['title'],
+      link: json['link'],
+      cover: json['cover'],
+      isAlbum: json['is_album'],
+      commentCount: json['comment_count'],
+      favoriteCount: json['favorite_count'],
+      points: json['points'],
+      vote: json['vote'],
+      favorite: (json['favorite'] ?? false),
+      author: json['account_url'],
+    );
   }
 
   static List<Imgur> allFromResponse(String response) {

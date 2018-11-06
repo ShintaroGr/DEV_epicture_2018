@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dev_epicture_2018/ui/gallery/favorite.dart';
 import 'package:dev_epicture_2018/ui/gallery/gallery_tabs.dart';
 import 'package:dev_epicture_2018/ui/gallery/my.dart';
 import 'package:dev_epicture_2018/ui/gallery/search.dart';
@@ -19,7 +18,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
   TabController _tabController;
   int _currentIndex = 0;
-  List<Widget> _children = [GalleryTabs(), Search(), Favorite(), MyGallery()];
+  List<Widget> _children = [GalleryTabs(), Search(), MyDetails()];
 
   @override
   void initState() {
@@ -82,11 +81,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 title: Text("Search"),
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.favorite),
-                title: Text("Favorite"),
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.image),
+                icon: Icon(Icons.account_circle),
                 title: Text("My"),
               ),
             ],

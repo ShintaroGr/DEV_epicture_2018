@@ -10,8 +10,8 @@ class DialogonalClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     Path path = Path();
-    path.lineTo(0.0, size.height - 60.0);
-    path.lineTo(size.width, size.height - 30.0);
+    path.lineTo(0.0, size.height - 75);
+    path.lineTo(size.width, size.height - 75);
     path.lineTo(size.width, 0.0);
     path.close();
     return path;
@@ -30,7 +30,8 @@ class UserDetails extends StatefulWidget {
   _UserDetailsState createState() => _UserDetailsState(username: this.username);
 }
 
-class _UserDetailsState extends State<UserDetails> {
+class _UserDetailsState extends State<UserDetails> with SingleTickerProviderStateMixin {
+  TabController _tabController;
   final String username;
   User _user;
 
@@ -51,7 +52,14 @@ class _UserDetailsState extends State<UserDetails> {
   @override
   initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
     _getUserInfo();
+  }
+
+  @override
+  dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   Widget _buildImage() {
@@ -80,8 +88,8 @@ class _UserDetailsState extends State<UserDetails> {
   }
 
   String _formatBio(String bio) {
-    if (bio != null && bio.length >= 155)
-      return bio.substring(0, 155) + '...';
+    if (bio != null && bio.length >= 100)
+      return bio.substring(0, 100) + '...';
     else
       return bio;
   }
@@ -125,28 +133,55 @@ class _UserDetailsState extends State<UserDetails> {
     );
   }
 
-  getData({int page = 0, String username}) async {
+  getSubmissions({int page = 0}) async {
     http.Response response;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     response = await http.get(
-      'https://api.imgur.com/3/account/' + username + '/submissions/' + page.toString() + '&album_previews=true&mature=true',
+      'https://api.imgur.com/3/account/' + this.username + '/submissions/' + page.toString() + '&album_previews=true&mature=true',
+      headers: {'Authorization': 'Bearer ' + prefs.getString('access_token')},
+    );
+    return Imgur.allFromResponse(response.body);
+  }
+
+  getFavorites({int page = 0}) async {
+    http.Response response;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    response = await http.get(
+      'https://api.imgur.com/3/account/' + this.username + '/gallery_favorites/' + page.toString() + '&album_previews=true&mature=true',
       headers: {'Authorization': 'Bearer ' + prefs.getString('access_token')},
     );
     return Imgur.allFromResponse(response.body);
   }
 
   Widget _buildBottomPart() {
-    return new Padding(
-      padding: new EdgeInsets.only(top: 190),
-      child: new Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Expanded(
-            child: Gallery(
-              dataCallback: (page) => getData(page: page, username: _user.url),
-            ),
+    return Padding(
+      padding: EdgeInsets.only(top: 140),
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: TabBar(
+            controller: _tabController,
+            tabs: [
+              Tab(
+                text: 'Posts',
+              ),
+              Tab(
+                text: 'Favorites',
+              ),
+            ],
           ),
-        ],
+        ),
+        body: TabBarView(
+          controller: _tabController,
+          children: <Widget>[
+            Gallery(
+              dataCallback: (page) => getSubmissions(page: page),
+            ),
+            Gallery(
+              dataCallback: (page) => getFavorites(page: page),
+            )
+          ],
+        ),
       ),
     );
   }
