@@ -44,8 +44,8 @@ class _CommentCardState extends State<CommentCard> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Image(
-                            image: AdvancedNetworkImage(
+                          CircleAvatar(
+                            backgroundImage: AdvancedNetworkImage(
                               'https://imgur.com/user/' + comment.author + '/avatar?maxwidth=290',
                               useDiskCache: true,
                               scale: 5,
@@ -112,8 +112,8 @@ class _CommentCardState extends State<CommentCard> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Image(
-                            image: AdvancedNetworkImage(
+                          CircleAvatar(
+                            backgroundImage: AdvancedNetworkImage(
                               'https://imgur.com/user/' + comment.author + '/avatar?maxwidth=290',
                               useDiskCache: true,
                               scale: 5,

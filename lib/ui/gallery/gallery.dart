@@ -5,24 +5,26 @@ import 'package:dev_epicture_2018/ui/imgur/card.dart';
 import 'package:flutter/material.dart';
 
 class Gallery extends StatefulWidget {
+  final nothingLoaded;
   final cardActions;
   final dataCallback;
 
-  Gallery({@required this.dataCallback, this.cardActions, Key key}) : super(key: key);
+  Gallery({@required this.dataCallback, this.cardActions, this.nothingLoaded, Key key}) : super(key: key);
 
   @override
-  GalleryState createState() => GalleryState(dataCallback: this.dataCallback, cardActions: this.cardActions);
+  GalleryState createState() => GalleryState(dataCallback: this.dataCallback, cardActions: this.cardActions, nothingLoaded: this.nothingLoaded);
 }
 
 class GalleryState extends State<Gallery> {
   final cardActions;
+  final nothingLoaded;
   List<Imgur> _imgurs;
   int _currentPage;
   ScrollController _scrollController;
   GlobalKey<RefreshIndicatorState> _refreshIndicatorKey;
   final dataCallback;
 
-  GalleryState({@required this.dataCallback, this.cardActions});
+  GalleryState({@required this.dataCallback, this.cardActions, this.nothingLoaded});
 
   refresh() {
     setState(() {
@@ -77,6 +79,25 @@ class GalleryState extends State<Gallery> {
     }
   }
 
+  Widget _buildEmpty() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Icon(
+            Icons.search,
+            size: 150,
+            color: Colors.white,
+          ),
+          Text(
+            'Nohting to show here',
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildGalleryTile(BuildContext context, int index) {
     var imgur = _imgurs[index];
 
@@ -95,22 +116,7 @@ class GalleryState extends State<Gallery> {
         child: CircularProgressIndicator(),
       );
     } else if (_imgurs.isEmpty) {
-      content = Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Icon(
-              Icons.search,
-              size: 150,
-              color: Colors.white,
-            ),
-            Text(
-              'Nohting to show here',
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            ),
-          ],
-        ),
-      );
+      content = this.nothingLoaded is Function ? this.nothingLoaded() : _buildEmpty();
     } else {
       content = RefreshIndicator(
         color: Colors.black,
@@ -120,6 +126,7 @@ class GalleryState extends State<Gallery> {
             _imgurs = null;
             _loadImgur();
           });
+          return;
         },
         child: ListView.builder(
           controller: _scrollController,

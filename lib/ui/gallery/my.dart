@@ -1,6 +1,7 @@
 import 'package:dev_epicture_2018/data/imgur.dart';
 import 'package:dev_epicture_2018/data/user.dart';
 import 'package:dev_epicture_2018/ui/gallery/gallery.dart';
+import 'package:dev_epicture_2018/ui/upload/upload.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_networkimage/flutter_advanced_networkimage.dart';
 import 'package:http/http.dart' as http;
@@ -75,18 +76,6 @@ class _MyDetailsState extends State<MyDetails> with SingleTickerProviderStateMix
     );
   }
 
-  Widget _buildTopHeader() {
-    return new Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 40.0),
-      child: IconButton(
-        icon: Icon(Icons.arrow_back, size: 32.0, color: Colors.white),
-        onPressed: () {
-          Navigator.pop(context);
-        },
-      ),
-    );
-  }
-
   String _formatBio(String bio) {
     if (bio != null && bio.length >= 100)
       return bio.substring(0, 100) + '...';
@@ -140,7 +129,6 @@ class _MyDetailsState extends State<MyDetails> with SingleTickerProviderStateMix
       'https://api.imgur.com/3/account/' + username + '/images/' + page.toString() + '?client_id=4525911e004914a&album_previews=true&mature=true',
       headers: {'Authorization': 'Bearer ' + prefs.getString('access_token')},
     );
-    print(response.body);
     return Imgur.allFromResponse(response.body);
   }
 
@@ -174,6 +162,24 @@ class _MyDetailsState extends State<MyDetails> with SingleTickerProviderStateMix
     );
   }
 
+  Widget _buildNothing() {
+    return Center(
+      child: IconButton(
+        iconSize: 100,
+        icon: Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
+        onPressed: () async {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Upload()),
+          );
+        },
+      ),
+    );
+  }
+
   Widget _buildBottomPart() {
     return Padding(
       padding: EdgeInsets.only(top: 135),
@@ -198,6 +204,7 @@ class _MyDetailsState extends State<MyDetails> with SingleTickerProviderStateMix
             Gallery(
               cardActions: (imgur) => _buildActionCard(imgur),
               dataCallback: (page) => getSubmissions(page: page),
+              nothingLoaded: () => _buildNothing(),
             ),
             Gallery(
               dataCallback: (page) => getFavorites(page: page),
