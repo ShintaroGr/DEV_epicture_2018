@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:dev_epicture_2018/ui/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -34,11 +35,49 @@ class Account {
     return onCode.stream;
   }
 
-  static Widget buildLoginButton(BuildContext context) {
-    return FlatButton(
-      child: Text(
-        'Login',
-        style: TextStyle(color: Colors.black),
+  static Widget buildLogoutButton(BuildContext context) {
+    return MaterialButton(
+      child: Row(
+        children: <Widget>[
+          Icon(
+            Icons.exit_to_app,
+            color: Colors.white,
+          ),
+          Text(
+            " Logout",
+            style: TextStyle(color: Colors.white),
+          )
+        ],
+      ),
+      onPressed: () async {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.clear();
+        while (Navigator.canPop(context)) {
+          Navigator.pop(context);
+        }
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
+      },
+    );
+  }
+
+  static Widget buildLoginButton(BuildContext context, {Color textColor = Colors.black, bool showIcon = false}) {
+    return MaterialButton(
+      child: Row(
+        children: <Widget>[
+          showIcon
+              ? Icon(
+                  Icons.account_circle,
+                  color: textColor,
+                )
+              : Container(),
+          Text(
+            " Login",
+            style: TextStyle(color: textColor),
+          )
+        ],
       ),
       onPressed: () async {
         Navigator.push(
@@ -49,9 +88,9 @@ class Account {
                   appBar: AppBar(
                     title: const Text('Login'),
                   ),
-                  withZoom: true,
-                  withLocalStorage: true,
                   withJavascript: true,
+                  clearCache: true,
+                  clearCookies: true,
                   userAgent: 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Mobile Safari/537.36',
                 ),
           ),
@@ -61,11 +100,16 @@ class Account {
         await onCode.forEach((value) {
           tokens.add(value);
         });
-        Navigator.pop(context);
-        Navigator.pop(context);
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('access_token', tokens[0]);
         await prefs.setString('refresh_token', tokens[1]);
+        while (Navigator.canPop(context)) {
+          Navigator.pop(context);
+        }
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
       },
     );
   }
