@@ -32,76 +32,120 @@ class _ImgurDetailsState extends State<ImgurDetails> {
 
   Future voteUp(Imgur imgur) async {
     http.Response response;
+    String oldVote;
+    int oldPoints;
+
+    oldVote = imgur.vote;
+    oldPoints = imgur.points;
     if (imgur.vote == 'up') {
+      setState(() {
+        imgur.vote = 'veto';
+        imgur.points -= 1;
+      });
       response = await http.post(
         'https://api.imgur.com/3/gallery/' + imgur.id + '/vote/veto',
         headers: await Account.getHeader(context: context, important: true),
       );
-      if (response.statusCode == 200)
+      if (response.statusCode != 200)
         setState(() {
-          imgur.vote = 'veto';
-          imgur.points -= 1;
+          imgur.vote = oldVote;
+          imgur.points = oldPoints;
         });
     } else if (imgur.vote == null || imgur.vote == 'veto') {
+      setState(() {
+        imgur.vote = 'up';
+        imgur.points += 1;
+      });
       response = await http.post(
         'https://api.imgur.com/3/gallery/' + imgur.id + '/vote/up',
         headers: await Account.getHeader(context: context, important: true),
       );
-      if (response.statusCode == 200)
+      if (response.statusCode != 200)
         setState(() {
-          imgur.vote = 'up';
-          imgur.points += 1;
+          imgur.vote = oldVote;
+          imgur.points = oldPoints;
         });
     } else {
+      setState(() {
+        imgur.vote = 'up';
+        imgur.points += 2;
+      });
       response = await http.post(
         'https://api.imgur.com/3/gallery/' + imgur.id + '/vote/up',
         headers: await Account.getHeader(context: context, important: true),
       );
-      if (response.statusCode == 200)
+      if (response.statusCode != 200)
         setState(() {
-          imgur.vote = 'up';
-          imgur.points += 2;
+          imgur.vote = oldVote;
+          imgur.points = oldPoints;
         });
     }
   }
 
   Future voteDown(Imgur imgur) async {
     http.Response response;
+    String oldVote;
+    int oldPoints;
+
+    oldVote = imgur.vote;
+    oldPoints = imgur.points;
     if (imgur.vote == 'down') {
+      setState(() {
+        imgur.vote = 'veto';
+        imgur.points += 1;
+      });
       response = await http.post(
         'https://api.imgur.com/3/gallery/' + imgur.id + '/vote/veto',
         headers: await Account.getHeader(context: context, important: true),
       );
-      if (response.statusCode == 200)
+      if (response.statusCode != 200)
         setState(() {
-          imgur.vote = 'veto';
-          imgur.points += 1;
+          imgur.vote = oldVote;
+          imgur.points = oldPoints;
         });
     } else if (imgur.vote == null || imgur.vote == 'veto') {
+      setState(() {
+        imgur.vote = 'down';
+        imgur.points -= 1;
+      });
       response = await http.post(
         'https://api.imgur.com/3/gallery/' + imgur.id + '/vote/down',
         headers: await Account.getHeader(context: context, important: true),
       );
-      if (response.statusCode == 200)
+      if (response.statusCode != 200)
         setState(() {
-          imgur.vote = 'down';
-          imgur.points -= 1;
+          imgur.vote = oldVote;
+          imgur.points = oldPoints;
         });
     } else {
+      setState(() {
+        imgur.vote = 'down';
+        imgur.points -= 2;
+      });
       response = await http.post(
         'https://api.imgur.com/3/gallery/' + imgur.id + '/vote/down',
         headers: await Account.getHeader(context: context, important: true),
       );
-      if (response.statusCode == 200)
+      if (response.statusCode != 200)
         setState(() {
-          imgur.vote = 'down';
-          imgur.points -= 2;
+          imgur.vote = oldVote;
+          imgur.points = oldPoints;
         });
     }
   }
 
   Future fav(Imgur imgur) async {
     http.Response response;
+    int oldFavoriteCount = imgur.favoriteCount;
+    setState(() {
+      if (imgur.favoriteCount != null) {
+        if (imgur.favorite)
+          imgur.favoriteCount -= 1;
+        else
+          imgur.favoriteCount += 1;
+      }
+      imgur.favorite = !imgur.favorite;
+    });
     if (imgur.isAlbum)
       response = await http.post(
         'https://api.imgur.com/3/album/' + imgur.id + '/favorite',
@@ -112,14 +156,9 @@ class _ImgurDetailsState extends State<ImgurDetails> {
         'https://api.imgur.com/3/image/' + imgur.id + '/favorite',
         headers: await Account.getHeader(context: context, important: true),
       );
-    if (response.statusCode == 200)
+    if (response.statusCode != 200)
       setState(() {
-        if (imgur.favoriteCount != null) {
-          if (imgur.favorite)
-            imgur.favoriteCount -= 1;
-          else
-            imgur.favoriteCount += 1;
-        }
+        imgur.favoriteCount = oldFavoriteCount;
         imgur.favorite = !imgur.favorite;
       });
   }
