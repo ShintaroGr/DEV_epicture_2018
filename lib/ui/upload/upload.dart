@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:dev_epicture_2018/account.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 
@@ -51,9 +50,23 @@ class _UploadState extends State<Upload> {
         _uploading = false;
       });
       if (json.decode(response.body)["success"]) {
-        Fluttertoast.showToast(msg: "Image uploaded", toastLength: Toast.LENGTH_SHORT, gravity: ToastGravity.TOP, timeInSecForIos: 1, bgcolor: "#43A047", textcolor: '#ffffff');
+        Scaffold.of(context).showSnackBar(
+          new SnackBar(
+            content: new Text(
+              "Image Uploaded",
+              textAlign: TextAlign.center,
+            ),
+          ),
+        );
       } else {
-        Fluttertoast.showToast(msg: "Failed", toastLength: Toast.LENGTH_SHORT, gravity: ToastGravity.TOP, timeInSecForIos: 1, bgcolor: "#F44336", textcolor: '#ffffff');
+        Scaffold.of(context).showSnackBar(
+          new SnackBar(
+            content: new Text(
+              "Failed",
+              textAlign: TextAlign.center,
+            ),
+          ),
+        );
       }
       Navigator.pop(context);
     }

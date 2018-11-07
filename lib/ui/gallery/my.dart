@@ -40,7 +40,11 @@ class _MyDetailsState extends State<MyDetails> with SingleTickerProviderStateMix
   _MyDetailsState({this.username});
 
   Future<void> _getUserInfo() async {
-    logged = await Account.isAuthenticated();
+    final isLogged = await Account.isAuthenticated();
+    setState(() {
+      logged = isLogged;
+    });
+    print(logged.toString());
     http.Response response;
     response = await http.get(
       'https://api.imgur.com/3/account/' + username + '?client_id=4525911e004914a',
@@ -152,10 +156,30 @@ class _MyDetailsState extends State<MyDetails> with SingleTickerProviderStateMix
         style: TextStyle(color: Colors.white),
       ),
       onPressed: () async {
-        await http.delete(
+        http.Response response;
+        response = await http.delete(
           'https://api.imgur.com/3/account/me/image/' + imgur.id + '?client_id=4525911e004914a&album_previews=true&mature=true',
           headers: await Account.getHeader(context: context, important: true),
         );
+        if (response.statusCode == 200) {
+          Scaffold.of(context).showSnackBar(
+            new SnackBar(
+              content: new Text(
+                "Image deleted",
+                textAlign: TextAlign.center,
+              ),
+            ),
+          );
+        } else {
+          Scaffold.of(context).showSnackBar(
+            new SnackBar(
+              content: new Text(
+                "Failed",
+                textAlign: TextAlign.center,
+              ),
+            ),
+          );
+        }
       },
     );
   }
@@ -224,7 +248,7 @@ class _MyDetailsState extends State<MyDetails> with SingleTickerProviderStateMix
         child: CircularProgressIndicator(),
       );
     } else {
-      Stack(
+      content = Stack(
         children: <Widget>[
           _buildBottomPart(),
           _buildImage(),

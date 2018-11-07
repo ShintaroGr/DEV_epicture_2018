@@ -4,23 +4,25 @@ import 'package:dev_epicture_2018/data/imgur.dart';
 import 'package:dev_epicture_2018/ui/imgur/comment.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_networkimage/flutter_advanced_networkimage.dart';
+import 'package:flutter_advanced_networkimage/transition_to_image.dart';
 import 'package:http/http.dart' as http;
-import 'package:share/share.dart';
 
 class ImgurDetails extends StatefulWidget {
   final Imgur imgur;
+  final actionBar;
 
-  ImgurDetails({this.imgur});
+  ImgurDetails({this.imgur, this.actionBar});
 
   @override
-  _ImgurDetailsState createState() => _ImgurDetailsState(imgur: this.imgur);
+  _ImgurDetailsState createState() => _ImgurDetailsState(imgur: this.imgur, actionBar: this.actionBar);
 }
 
 class _ImgurDetailsState extends State<ImgurDetails> {
   Imgur imgur;
+  final actionBar;
   List<Comment> _comments = [];
 
-  _ImgurDetailsState({this.imgur});
+  _ImgurDetailsState({this.imgur, this.actionBar});
 
   @override
   void initState() {
@@ -149,74 +151,18 @@ class _ImgurDetailsState extends State<ImgurDetails> {
       body: ListView(
         cacheExtent: 500,
         children: <Widget>[
-          Image(
-            image: AdvancedNetworkImage(
-              imgur.cover == null ? imgur.link : 'https://i.imgur.com/' + imgur.cover + '.png',
+          TransitionToImage(
+            AdvancedNetworkImage(
+              imgur.cover == null ? imgur.link : 'https://i.imgur.com/' + imgur.cover + '.gif',
               useDiskCache: true,
+              retryLimit: 2,
+            ),
+            placeholder: const Icon(
+              Icons.close,
+              size: 50,
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  IconButton(
-                    onPressed: () async {
-                      await voteUp(imgur);
-                    },
-                    icon: Icon(
-                      Icons.arrow_upward,
-                      color: imgur.vote == "up" ? Colors.white : Colors.grey,
-                    ),
-                  ),
-                  Text(
-                    imgur.points.toString(),
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  IconButton(
-                    onPressed: () async {
-                      await voteDown(imgur);
-                    },
-                    icon: Icon(
-                      Icons.arrow_downward,
-                      color: imgur.vote == "down" ? Colors.white : Colors.grey,
-                    ),
-                  ),
-                ],
-              ),
-              FlatButton.icon(
-                onPressed: () async {
-                  await fav(imgur);
-                },
-                icon: imgur.favorite
-                    ? Icon(
-                        Icons.favorite,
-                        color: Colors.white,
-                      )
-                    : Icon(
-                        Icons.favorite_border,
-                        color: Colors.grey,
-                      ),
-                label: Text(
-                  (imgur.favoriteCount ?? '').toString(),
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-              FlatButton.icon(
-                onPressed: () {
-                  Share.share(imgur.title + '\n' + imgur.link);
-                },
-                icon: Icon(
-                  Icons.share,
-                  color: Colors.white,
-                ),
-                label: Text(
-                  'Share',
-                  style: TextStyle(color: Colors.white),
-                ),
-              )
-            ],
-          ),
+          actionBar(imgur),
         ]..addAll(List.generate(_comments.length, _buildCommentTile)),
       ),
     );

@@ -126,7 +126,10 @@ class _ImgurCardState extends State<ImgurCard> {
       child: Row(
         children: <Widget>[
           CircleAvatar(
-            backgroundImage: AdvancedNetworkImage('https://imgur.com/user/' + imgur.author + '/avatar?maxwidth=290', scale: 5),
+            backgroundImage: AdvancedNetworkImage(
+              'https://imgur.com/user/' + imgur.author + '/avatar?maxwidth=290',
+              scale: 5,
+            ),
           ),
           GestureDetector(
             onTap: () {
@@ -171,7 +174,10 @@ class _ImgurCardState extends State<ImgurCard> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ImgurDetails(imgur: imgur),
+            builder: (context) => ImgurDetails(
+                  imgur: imgur,
+                  actionBar: this.actionBar is Function ? this.actionBar : _buildActionBar,
+                ),
           ),
         );
       },
@@ -189,7 +195,7 @@ class _ImgurCardState extends State<ImgurCard> {
     );
   }
 
-  Widget _buildActionBar() {
+  Widget _buildActionBar(Imgur imgur) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: <Widget>[
@@ -269,7 +275,7 @@ class _ImgurCardState extends State<ImgurCard> {
             children: <Widget>[
               _buildCardHeader(),
               _buildImage(),
-              this.actionBar is Function ? this.actionBar(imgur) : _buildActionBar(),
+              this.actionBar is Function ? this.actionBar(imgur) : _buildActionBar(imgur),
             ],
           ),
         ),

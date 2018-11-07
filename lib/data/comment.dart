@@ -24,7 +24,10 @@ class Comment {
   static List<Comment> allFromResponse(String response) {
     var decodedJson = json.decode(response).cast<String, dynamic>();
 
-    return decodedJson['data'].cast<Map<String, dynamic>>().map((obj) => Comment.fromJson(obj)).toList().cast<Comment>();
+    if (decodedJson['success'] == true) {
+      return decodedJson['data'].cast<Map<String, dynamic>>().map((obj) => Comment.fromJson(obj)).toList().cast<Comment>();
+    }
+    return [];
   }
 
   static List<Comment> getChildren(Map<String, dynamic> json) {

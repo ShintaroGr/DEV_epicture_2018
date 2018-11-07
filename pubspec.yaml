@@ -16,7 +16,7 @@ dependencies:
   flutter_advanced_networkimage: any
   http:
   image_picker:
-  fluttertoast: ^2.0.9
+  fluttertoast: ^2.1.0
   share:
   flutter_webview_plugin:
   shared_preferences:
