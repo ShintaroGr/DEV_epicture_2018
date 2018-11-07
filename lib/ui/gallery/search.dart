@@ -1,3 +1,4 @@
+import 'package:dev_epicture_2018/account.dart';
 import 'package:dev_epicture_2018/data/imgur.dart';
 import 'package:dev_epicture_2018/ui/gallery/gallery.dart';
 import 'package:flutter/material.dart';
@@ -22,9 +23,10 @@ class _SearchState extends State<Search> {
 
   getData({int page = 0}) async {
     http.Response response;
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    response = await http.get('https://api.imgur.com/3/gallery/search/hot/' + page.toString() + '?client_id=4525911e004914a&album_previews=true&mature=true&q=' + this._searchText,
-        headers: prefs.getString('access_token') != null ? {'Authorization': 'Bearer ' + prefs.getString('access_token')} : {});
+    response = await http.get(
+      'https://api.imgur.com/3/gallery/search/hot/' + page.toString() + '?client_id=4525911e004914a&album_previews=true&mature=true&q=' + this._searchText,
+      headers: await Account.getHeader(context: context, important: true),
+    );
     return Imgur.allFromResponse(response.body);
   }
 

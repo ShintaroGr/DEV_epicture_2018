@@ -1,10 +1,10 @@
+import 'package:dev_epicture_2018/account.dart';
 import 'package:dev_epicture_2018/data/imgur.dart';
 import 'package:dev_epicture_2018/ui/imgur/details.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_networkimage/flutter_advanced_networkimage.dart';
 import 'package:http/http.dart' as http;
 import 'package:share/share.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ImgurCard extends StatefulWidget {
   final Imgur imgur;
@@ -24,66 +24,97 @@ class _ImgurCardState extends State<ImgurCard> {
   _ImgurCardState({this.imgur, this.actionBar});
 
   Future voteUp(Imgur imgur) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    http.Response response;
     if (imgur.vote == 'up') {
-      http.post('https://api.imgur.com/3/gallery/' + imgur.id + '/vote/veto', headers: {'Authorization': 'Bearer ' + prefs.getString('access_token')});
-      setState(() {
-        imgur.vote = 'veto';
-        imgur.points -= 1;
-      });
+      response = await http.post(
+        'https://api.imgur.com/3/gallery/' + imgur.id + '/vote/veto',
+        headers: await Account.getHeader(context: context, important: true),
+      );
+      if (response.statusCode == 200)
+        setState(() {
+          imgur.vote = 'veto';
+          imgur.points -= 1;
+        });
     } else if (imgur.vote == null || imgur.vote == 'veto') {
-      http.post('https://api.imgur.com/3/gallery/' + imgur.id + '/vote/up', headers: {'Authorization': 'Bearer ' + prefs.getString('access_token')});
-      setState(() {
-        imgur.vote = 'up';
-        imgur.points += 1;
-      });
+      response = await http.post(
+        'https://api.imgur.com/3/gallery/' + imgur.id + '/vote/up',
+        headers: await Account.getHeader(context: context, important: true),
+      );
+      if (response.statusCode == 200)
+        setState(() {
+          imgur.vote = 'up';
+          imgur.points += 1;
+        });
     } else {
-      http.post('https://api.imgur.com/3/gallery/' + imgur.id + '/vote/up', headers: {'Authorization': 'Bearer ' + prefs.getString('access_token')});
-      setState(() {
-        imgur.vote = 'up';
-        imgur.points += 2;
-      });
+      response = await http.post(
+        'https://api.imgur.com/3/gallery/' + imgur.id + '/vote/up',
+        headers: await Account.getHeader(context: context, important: true),
+      );
+      if (response.statusCode == 200)
+        setState(() {
+          imgur.vote = 'up';
+          imgur.points += 2;
+        });
     }
   }
 
   Future voteDown(Imgur imgur) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    http.Response response;
     if (imgur.vote == 'down') {
-      http.post('https://api.imgur.com/3/gallery/' + imgur.id + '/vote/veto', headers: {'Authorization': 'Bearer ' + prefs.getString('access_token')});
-      setState(() {
-        imgur.vote = 'veto';
-        imgur.points += 1;
-      });
+      response = await http.post(
+        'https://api.imgur.com/3/gallery/' + imgur.id + '/vote/veto',
+        headers: await Account.getHeader(context: context, important: true),
+      );
+      if (response.statusCode == 200)
+        setState(() {
+          imgur.vote = 'veto';
+          imgur.points += 1;
+        });
     } else if (imgur.vote == null || imgur.vote == 'veto') {
-      http.post('https://api.imgur.com/3/gallery/' + imgur.id + '/vote/down', headers: {'Authorization': 'Bearer ' + prefs.getString('access_token')});
-      setState(() {
-        imgur.vote = 'down';
-        imgur.points -= 1;
-      });
+      response = await http.post(
+        'https://api.imgur.com/3/gallery/' + imgur.id + '/vote/down',
+        headers: await Account.getHeader(context: context, important: true),
+      );
+      if (response.statusCode == 200)
+        setState(() {
+          imgur.vote = 'down';
+          imgur.points -= 1;
+        });
     } else {
-      http.post('https://api.imgur.com/3/gallery/' + imgur.id + '/vote/down', headers: {'Authorization': 'Bearer ' + prefs.getString('access_token')});
-      setState(() {
-        imgur.vote = 'down';
-        imgur.points -= 2;
-      });
+      response = await http.post(
+        'https://api.imgur.com/3/gallery/' + imgur.id + '/vote/down',
+        headers: await Account.getHeader(context: context, important: true),
+      );
+      if (response.statusCode == 200)
+        setState(() {
+          imgur.vote = 'down';
+          imgur.points -= 2;
+        });
     }
   }
 
   Future fav(Imgur imgur) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    http.Response response;
     if (imgur.isAlbum)
-      http.post('https://api.imgur.com/3/album/' + imgur.id + '/favorite', headers: {'Authorization': 'Bearer ' + prefs.getString('access_token')});
+      response = await http.post(
+        'https://api.imgur.com/3/album/' + imgur.id + '/favorite',
+        headers: await Account.getHeader(context: context, important: true),
+      );
     else
-      http.post('https://api.imgur.com/3/image/' + imgur.id + '/favorite', headers: {'Authorization': 'Bearer ' + prefs.getString('access_token')});
-    setState(() {
-      if (imgur.favoriteCount != null) {
-        if (imgur.favorite)
-          imgur.favoriteCount -= 1;
-        else
-          imgur.favoriteCount += 1;
-      }
-      imgur.favorite = !imgur.favorite;
-    });
+      response = await http.post(
+        'https://api.imgur.com/3/image/' + imgur.id + '/favorite',
+        headers: await Account.getHeader(context: context, important: true),
+      );
+    if (response.statusCode == 200)
+      setState(() {
+        if (imgur.favoriteCount != null) {
+          if (imgur.favorite)
+            imgur.favoriteCount -= 1;
+          else
+            imgur.favoriteCount += 1;
+        }
+        imgur.favorite = !imgur.favorite;
+      });
   }
 
   Widget _buildCardHeader() {

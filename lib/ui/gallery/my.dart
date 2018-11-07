@@ -1,3 +1,4 @@
+import 'package:dev_epicture_2018/account.dart';
 import 'package:dev_epicture_2018/data/imgur.dart';
 import 'package:dev_epicture_2018/data/user.dart';
 import 'package:dev_epicture_2018/ui/gallery/gallery.dart';
@@ -5,7 +6,6 @@ import 'package:dev_epicture_2018/ui/upload/upload.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_networkimage/flutter_advanced_networkimage.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 class DialogonalClipper extends CustomClipper<Path> {
   @override
@@ -34,16 +34,17 @@ class MyDetails extends StatefulWidget {
 class _MyDetailsState extends State<MyDetails> with SingleTickerProviderStateMixin {
   TabController _tabController;
   final String username;
+  bool logged = false;
   User _user;
 
   _MyDetailsState({this.username});
 
   Future<void> _getUserInfo() async {
+    logged = await Account.isAuthenticated();
     http.Response response;
-    SharedPreferences prefs = await SharedPreferences.getInstance();
     response = await http.get(
       'https://api.imgur.com/3/account/' + username + '?client_id=4525911e004914a',
-      headers: {'Authorization': 'Bearer ' + prefs.getString('access_token')},
+      headers: await Account.getHeader(context: context, important: true),
     );
     setState(() {
       _user = User.fromResponse(response.body);
@@ -67,7 +68,7 @@ class _MyDetailsState extends State<MyDetails> with SingleTickerProviderStateMix
     return ClipPath(
       clipper: DialogonalClipper(),
       child: Image(
-        image: AdvancedNetworkImage(_user.cover),
+        image: AdvancedNetworkImage(_user.cover ?? ''),
         fit: BoxFit.fitHeight,
         height: 250,
         colorBlendMode: BlendMode.srcOver,
@@ -91,7 +92,7 @@ class _MyDetailsState extends State<MyDetails> with SingleTickerProviderStateMix
           CircleAvatar(
             minRadius: 28.0,
             maxRadius: 28.0,
-            backgroundImage: AdvancedNetworkImage(_user.avatar),
+            backgroundImage: AdvancedNetworkImage(_user.avatar ?? ''),
           ),
           Padding(
             padding: const EdgeInsets.only(left: 16.0),
@@ -124,20 +125,18 @@ class _MyDetailsState extends State<MyDetails> with SingleTickerProviderStateMix
 
   getSubmissions({int page = 0}) async {
     http.Response response;
-    SharedPreferences prefs = await SharedPreferences.getInstance();
     response = await http.get(
       'https://api.imgur.com/3/account/' + username + '/images/' + page.toString() + '?client_id=4525911e004914a&album_previews=true&mature=true',
-      headers: {'Authorization': 'Bearer ' + prefs.getString('access_token')},
+      headers: await Account.getHeader(context: context, important: true),
     );
     return Imgur.allFromResponse(response.body);
   }
 
   getFavorites({int page = 0}) async {
     http.Response response;
-    SharedPreferences prefs = await SharedPreferences.getInstance();
     response = await http.get(
       'https://api.imgur.com/3/account/' + username + '/gallery_favorites/' + page.toString() + '?client_id=4525911e004914a&album_previews=true&mature=true',
-      headers: {'Authorization': 'Bearer ' + prefs.getString('access_token')},
+      headers: await Account.getHeader(context: context, important: true),
     );
     return Imgur.allFromResponse(response.body);
   }
@@ -153,10 +152,9 @@ class _MyDetailsState extends State<MyDetails> with SingleTickerProviderStateMix
         style: TextStyle(color: Colors.white),
       ),
       onPressed: () async {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
         await http.delete(
           'https://api.imgur.com/3/account/me/image/' + imgur.id + '?client_id=4525911e004914a&album_previews=true&mature=true',
-          headers: {'Authorization': 'Bearer ' + prefs.getString('access_token')},
+          headers: await Account.getHeader(context: context, important: true),
         );
       },
     );
@@ -217,18 +215,27 @@ class _MyDetailsState extends State<MyDetails> with SingleTickerProviderStateMix
 
   @override
   Widget build(BuildContext context) {
+    Widget content;
+
+    if (!logged) {
+      content = Container();
+    } else if (_user == null) {
+      content = Center(
+        child: CircularProgressIndicator(),
+      );
+    } else {
+      Stack(
+        children: <Widget>[
+          _buildBottomPart(),
+          _buildImage(),
+          _buildProfileRow(),
+        ],
+      );
+    }
+
     return Scaffold(
-      body: _user == null
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
-          : Stack(
-              children: <Widget>[
-                _buildBottomPart(),
-                _buildImage(),
-                _buildProfileRow(),
-              ],
-            ),
+      backgroundColor: Color.fromARGB(255, 25, 25, 25),
+      body: content,
     );
   }
 }

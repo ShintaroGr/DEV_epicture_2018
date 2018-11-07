@@ -1,10 +1,10 @@
 import 'dart:convert';
 
+import 'package:dev_epicture_2018/account.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class Upload extends StatefulWidget {
   @override
@@ -39,14 +39,12 @@ class _UploadState extends State<Upload> {
   void submit() async {
     if (this._formKey.currentState.validate()) {
       _formKey.currentState.save();
-
-      SharedPreferences prefs = await SharedPreferences.getInstance();
       setState(() {
         _uploading = true;
       });
       http.Response response = await http.post(
         'https://api.imgur.com/3/image?client_id=4525911e004914a',
-        headers: {'Authorization': 'Bearer ' + prefs.getString('access_token')},
+        headers: await Account.getHeader(context: context, important: true),
         body: {"image": _data.image, "title": _data.title, "description": _data.description},
       );
       setState(() {

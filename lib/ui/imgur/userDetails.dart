@@ -1,10 +1,10 @@
+import 'package:dev_epicture_2018/account.dart';
 import 'package:dev_epicture_2018/data/imgur.dart';
 import 'package:dev_epicture_2018/data/user.dart';
 import 'package:dev_epicture_2018/ui/gallery/gallery.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_networkimage/flutter_advanced_networkimage.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 class DialogonalClipper extends CustomClipper<Path> {
   @override
@@ -39,10 +39,9 @@ class _UserDetailsState extends State<UserDetails> with SingleTickerProviderStat
 
   Future<void> _getUserInfo() async {
     http.Response response;
-    SharedPreferences prefs = await SharedPreferences.getInstance();
     response = await http.get(
       'https://api.imgur.com/3/account/' + username + '?client_id=4525911e004914a',
-      headers: {'Authorization': 'Bearer ' + prefs.getString('access_token')},
+      headers: await Account.getHeader(context: context),
     );
     setState(() {
       _user = User.fromResponse(response.body);
@@ -135,20 +134,18 @@ class _UserDetailsState extends State<UserDetails> with SingleTickerProviderStat
 
   getSubmissions({int page = 0}) async {
     http.Response response;
-    SharedPreferences prefs = await SharedPreferences.getInstance();
     response = await http.get(
-      'https://api.imgur.com/3/account/' + this.username + '/submissions/' + page.toString() + '&album_previews=true&mature=true',
-      headers: {'Authorization': 'Bearer ' + prefs.getString('access_token')},
+      'https://api.imgur.com/3/account/' + this.username + '/submissions/' + page.toString() + '?client_id=4525911e004914a&album_previews=true&mature=true',
+      headers: await Account.getHeader(context: context),
     );
     return Imgur.allFromResponse(response.body);
   }
 
   getFavorites({int page = 0}) async {
     http.Response response;
-    SharedPreferences prefs = await SharedPreferences.getInstance();
     response = await http.get(
-      'https://api.imgur.com/3/account/' + this.username + '/gallery_favorites/' + page.toString() + '&album_previews=true&mature=true',
-      headers: {'Authorization': 'Bearer ' + prefs.getString('access_token')},
+      'https://api.imgur.com/3/account/' + this.username + '/gallery_favorites/' + page.toString() + '?client_id=4525911e004914a&album_previews=true&mature=true',
+      headers: await Account.getHeader(context: context),
     );
     return Imgur.allFromResponse(response.body);
   }
