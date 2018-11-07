@@ -129,9 +129,11 @@ class GalleryState extends State<Gallery> {
           return;
         },
         child: ListView.builder(
+          scrollDirection: Axis.vertical,
           controller: _scrollController,
           itemCount: _imgurs.length,
           itemBuilder: _buildGalleryTile,
+          cacheExtent: 1000,
         ),
       );
     }
