@@ -1,8 +1,10 @@
 import 'package:dev_epicture_2018/account.dart';
 import 'package:dev_epicture_2018/data/imgur.dart';
 import 'package:dev_epicture_2018/ui/imgur/details.dart';
+import 'package:dev_epicture_2018/ui/imgur/userDetails.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_networkimage/flutter_advanced_networkimage.dart';
+import 'package:flutter_advanced_networkimage/transition_to_image.dart';
 import 'package:http/http.dart' as http;
 import 'package:share/share.dart';
 
@@ -17,6 +19,7 @@ class ImgurCard extends StatefulWidget {
 }
 
 class _ImgurCardState extends State<ImgurCard> {
+  bool cannotLoad = false;
   final actionBar;
   Imgur imgur;
   Size size;
@@ -125,26 +128,36 @@ class _ImgurCardState extends State<ImgurCard> {
           CircleAvatar(
             backgroundImage: AdvancedNetworkImage('https://imgur.com/user/' + imgur.author + '/avatar?maxwidth=290', scale: 5),
           ),
-          Padding(
-            padding: EdgeInsets.only(left: 10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  child: Text(
-                    imgur.title,
-                    style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold, color: Colors.white),
-                  ),
-                  width: size.width * 0.7,
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => UserDetails(username: imgur.author),
                 ),
-                Container(
-                  child: Text(
-                    imgur.author,
-                    style: TextStyle(fontSize: 12.0, color: Colors.grey),
+              );
+            },
+            child: Padding(
+              padding: EdgeInsets.only(left: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    child: Text(
+                      imgur.title,
+                      style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold, color: Colors.white),
+                    ),
+                    width: size.width * 0.7,
                   ),
-                  width: size.width * 0.7,
-                )
-              ],
+                  Container(
+                    child: Text(
+                      imgur.author,
+                      style: TextStyle(fontSize: 12.0, color: Colors.grey),
+                    ),
+                    width: size.width * 0.7,
+                  )
+                ],
+              ),
             ),
           ),
         ],
@@ -162,10 +175,15 @@ class _ImgurCardState extends State<ImgurCard> {
           ),
         );
       },
-      child: Image(
-        image: AdvancedNetworkImage(
-          imgur.cover == null ? imgur.link : 'https://i.imgur.com/' + imgur.cover + '.png',
+      child: TransitionToImage(
+        AdvancedNetworkImage(
+          imgur.cover == null ? imgur.link : 'https://i.imgur.com/' + imgur.cover + '.gif',
           useDiskCache: true,
+          retryLimit: 2,
+        ),
+        placeholder: const Icon(
+          Icons.close,
+          size: 50,
         ),
       ),
     );
