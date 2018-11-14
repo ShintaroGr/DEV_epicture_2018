@@ -41,18 +41,20 @@ class _MyDetailsState extends State<MyDetails> with SingleTickerProviderStateMix
 
   Future<void> _getUserInfo() async {
     final isLogged = await Account.isAuthenticated();
-    setState(() {
-      logged = isLogged;
-    });
+    if (this.mounted)
+      setState(() {
+        logged = isLogged;
+      });
     print(logged.toString());
     http.Response response;
     response = await http.get(
       'https://api.imgur.com/3/account/' + username + '?client_id=4525911e004914a',
       headers: await Account.getHeader(context: context, important: true),
     );
-    setState(() {
-      _user = User.fromResponse(response.body);
-    });
+    if (this.mounted)
+      setState(() {
+        _user = User.fromResponse(response.body);
+      });
   }
 
   @override

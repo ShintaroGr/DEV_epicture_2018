@@ -21,7 +21,9 @@ class Account {
         ..headers.set("Content-Type", ContentType.html.mimeType)
         ..write("<html><body bgcolor='#000000'></body></html>"
             "<script>"
-            "if (location.hash.substring(1)) {console.log('http://localhost:8080/?' + location.hash.substring(1));window.location = 'http://localhost:8080/?' + location.hash.substring(1);}"
+            "if (location.hash.substring(1)) {"
+            "window.location = 'http://localhost:8080/?' + location.hash.substring(1);"
+            "}"
             "</script>");
       await request.response.close();
       if (request.uri.queryParameters.isNotEmpty) {
